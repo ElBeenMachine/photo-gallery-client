@@ -1,4 +1,6 @@
 import Head from "next/head";
+import Navbar from "./Navbar";
+import { Box } from "@chakra-ui/layout";
 
 const Layout = (props) => {
     return (
@@ -11,7 +13,10 @@ const Layout = (props) => {
                 <link ref="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
             </Head>
             <div>
-                {props.children}
+                <Navbar />
+                <Box p={4}>
+                    {props.children}
+                </Box>
             </div>
         </div>
     )

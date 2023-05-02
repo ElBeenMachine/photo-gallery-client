@@ -1,9 +1,9 @@
-import LoginForm from '@/components/Signin';
+import Layout from "@/Components/Global/Layout";
 
 export default function Home() {
-  return (
-    <>
-      <LoginForm />
-    </>
-  )
+    return (
+        <Layout pageTitle = "Photo Gallery | Home">
+
+        </Layout>
+    )
 }
