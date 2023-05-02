@@ -1,16 +1,11 @@
 import { Box, Flex, Avatar, HStack, IconButton, Button, Menu, MenuButton, MenuList, MenuItem, MenuDivider, useDisclosure, useColorModeValue, Stack } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import Links from "./Links";
 
-const Links = [
-    "Dashboard",
-    "Projects",
-    "Team"
-];
-
-const NavLink = ({ children }) => {
+const NavLink = ({ children, href }) => {
     return (
-        <Link px={2} py={1} rounded={"md"} _hover={{ textDecoration: "none", bg: useColorModeValue("gray.200", "gray.700")}} href={"#"}>
+        <Link px={2} py={1} rounded={"md"} _hover={{ textDecoration: "none", bg: useColorModeValue("gray.200", "gray.700")}} href={href}>
             {children}
         </Link>
     )
@@ -26,7 +21,7 @@ const Navbar = () => {
                 <HStack spacing={0} alignItems={"center"}>
                     <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
                         {Links.map((link) => (
-                            <NavLink key={link}>{link}</NavLink>
+                            <NavLink href={link.path} key={link.name}>{link.name}</NavLink>
                         ))}
                     </HStack>
                 </HStack>
@@ -49,7 +44,7 @@ const Navbar = () => {
                 <Box pb={4} display={{ md: "none"}}>
                     <Stack as={"nav"} spacing={4}>
                         {Links.map((link) => (
-                            <NavLink key={link}>{link}</NavLink>
+                            <NavLink href={link.path} key={link.name}>{link.name}</NavLink>
                         ))}
                     </Stack>
                 </Box>
