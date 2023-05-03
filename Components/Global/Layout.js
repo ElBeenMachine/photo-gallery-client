@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Navbar from "./Navbar";
+import Navbar from "./Navigation/Navbar";
 import { Box } from "@chakra-ui/layout";
 import Footer from "./Footer";
 
