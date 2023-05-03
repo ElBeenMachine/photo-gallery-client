@@ -1,10 +1,10 @@
 import Layout from "@/Components/Global/Layout";
-import Hero from "@/Components/Landing Page/Hero";
+import LoginForm from "@/Components/Authentication/LoginForm";
 
 export default function Home() {
     return (
         <Layout pageTitle = "Photo Gallery | Home">
-            <Hero />
+            <LoginForm />
         </Layout>
-    )
+    );
 }
