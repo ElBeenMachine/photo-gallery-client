@@ -35,7 +35,6 @@ export default NextAuth({
                 } catch (error) {
                     if(error instanceof AxiosError) {
                         if(error.response) {
-                            console.log(error.response.data.message);
                             throw new Error(error.response.data.message);
                         }
                     }
@@ -54,6 +53,8 @@ export default NextAuth({
                 token.user = {
                     _id: user.user._id,
                     role: user.user.role,
+                    username: user.user.username,
+                    fname: user.user.fname,
                     avatar: user.user.avatar || null
                 };
             }

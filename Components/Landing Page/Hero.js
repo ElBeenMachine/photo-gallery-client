@@ -1,5 +1,6 @@
 import { Box, Heading, Container, Text, Button, Stack, Flex, Icon, useColorModeValue } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 const CTAButton = ({ children, href }) => {
     const router = useRouter();
@@ -12,6 +13,7 @@ const CTAButton = ({ children, href }) => {
 }
 
 const Hero = () => {
+    const { data: session } = useSession();
     return (
         <Container  maxW={"3xl"}>
             <Flex minH={"calc(100vh - 180px)"} justifyContent={"center"} alignItems={"center"}>
@@ -21,11 +23,18 @@ const Hero = () => {
                         <Text as={"span"} color={"green.400"}>Photo Gallery</Text>
                     </Heading>
                     <Text color={'gray.500'}>
-                        Access photos from our trips, days out, events, everything. Simply log in, and you will receive access to all of your photos.
+                        Access photos from our trips, days out, events, everything. { session ? "Simply visit your dashboard" : "Simply log in"}, and you will receive access to all of your photos.
                     </Text>
-                    <Stack direction={"column"} spacing={3} align={"center"} alignSelf={"center"} position={"relative"}>
-                        <CTAButton href={"/auth/login"}>Log In</CTAButton>
-                    </Stack>
+                    { session ? (
+                        <Stack direction={"column"} spacing={3} align={"center"} alignSelf={"center"} position={"relative"}>
+                            <CTAButton href={"/dashboard"}>My Dashboard</CTAButton>
+                        </Stack>
+                    ) : (
+                        <Stack direction={"column"} spacing={3} align={"center"} alignSelf={"center"} position={"relative"}>
+                            <CTAButton href={"/dashboard"}>Log In</CTAButton>
+                        </Stack>
+                    )}
+                    
                 </Stack>
             </Flex>
         </Container>

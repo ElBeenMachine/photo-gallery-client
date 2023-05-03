@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import { hasToken } from "@/utils/checkUser";
 
 export default function Home() {
-    const { data: session } = useSession()
+    const { data: session } = useSession();
     return (
         <Layout pageTitle = "Photo Gallery | My Dashboard">
             
@@ -16,7 +16,7 @@ export async function getServerSideProps(context) {
     if(!token) {
         return {
             redirect: {
-                destination: context.req.url ? `/auth/login?referer=${context.req.headers["x-forwarded-proto"] + '://' + context.req.headers.host + context.req.url}` : "/auth/login",
+                destination: context.resolvedUrl ? `/auth/login?referer=${context.req.headers["x-forwarded-proto"] + '://' + context.req.headers.host + context.resolvedUrl}` : "/auth/login",
                 permanent: false
             }
         }
