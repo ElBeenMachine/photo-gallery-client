@@ -3,11 +3,11 @@ import { Link } from "@chakra-ui/next-js";
 import { FiHome, FiTrendingUp, FiCompass, FiStar, FiSettings, FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
 
 const LinkItems = [
-  { name: 'Home', icon: FiHome },
-  { name: 'Trending', icon: FiTrendingUp },
-  { name: 'Explore', icon: FiCompass },
-  { name: 'Favourites', icon: FiStar },
-  { name: 'Settings', icon: FiSettings },
+    { name: 'Home', icon: FiHome },
+    { name: 'Trending', icon: FiTrendingUp },
+    { name: 'Explore', icon: FiCompass },
+    { name: 'Favourites', icon: FiStar },
+    { name: 'Settings', icon: FiSettings },
 ];
 
 const DashContent = ({ children }) => {
@@ -73,7 +73,6 @@ const MobileNav = ({ onOpen, ...rest }) => {
             </Text>
 
             <HStack spacing={{ base: '0', md: '6' }}>
-                <IconButton size="lg" variant="ghost" aria-label="open menu" icon={<FiBell />}/>
                 <Flex alignItems={'center'}>
                     <Menu>
                         <MenuButton py={2} transition="all 0.3s" _focus={{ boxShadow: 'none' }}>
