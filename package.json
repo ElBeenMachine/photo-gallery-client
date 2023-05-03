@@ -14,8 +14,10 @@
     "@chakra-ui/react": "^2.6.0",
     "@emotion/react": "^11.10.8",
     "@emotion/styled": "^11.10.8",
+    "axios": "^1.4.0",
     "framer-motion": "^10.12.7",
     "next": "13.3.4",
+    "next-auth": "^4.22.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0"

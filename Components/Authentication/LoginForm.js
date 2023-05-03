@@ -2,10 +2,16 @@ import { Flex, Box, FormControl, FormLabel, Input, Checkbox, Stack, Button, Head
 import { Link } from "@chakra-ui/next-js";
   
 export default function SimpleCard() {
+
     async function handleLogin(e) {
         e.preventDefault();
-        console.log(e.target.email.value);
-        console.log(e.target.password.value);
+
+        const creds = {
+            email: e.target.email.value,
+            password: e.target.password.value
+        }
+        
+        console.log(creds);
     }
 
     return (

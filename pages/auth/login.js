@@ -3,7 +3,7 @@ import LoginForm from "@/Components/Authentication/LoginForm";
 
 export default function Home() {
     return (
-        <Layout pageTitle = "Photo Gallery | Home">
+        <Layout pageTitle = "Photo Gallery | Login">
             <LoginForm />
         </Layout>
     );
