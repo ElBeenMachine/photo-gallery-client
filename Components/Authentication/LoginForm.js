@@ -1,7 +1,12 @@
 import { Flex, Box, FormControl, FormLabel, Input, Checkbox, Stack, Button, Heading, Text, useColorModeValue, } from '@chakra-ui/react';
 import { Link } from "@chakra-ui/next-js";
+import { useRouter } from 'next/router';
+import { signIn } from "next-auth/react";
+import { toast } from 'react-toastify';
   
 export default function SimpleCard() {
+    const router = useRouter();
+    const redirect = router.query.referer ? router.query.referer : "/";
 
     async function handleLogin(e) {
         e.preventDefault();
@@ -10,8 +15,20 @@ export default function SimpleCard() {
             email: e.target.email.value,
             password: e.target.password.value
         }
-        
-        console.log(creds);
+
+        await signIn("credentials", {
+            redirect: false,
+            email: creds.email,
+            password: creds.password
+        }).then(({ok, error}) => {
+            if(ok) {
+                toast.success("Login Successful");
+                router.push(redirect);
+            } else {
+                console.error(error);
+                toast.error(error);
+            }
+        });
     }
 
     return (
@@ -33,7 +50,7 @@ export default function SimpleCard() {
                         </FormControl>
                         <Stack spacing={10}>
                             <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'space-between'}>
-                                <Link href={"#"} color={'green.400'}>Forgot password?</Link>
+                                <Link href={""} color={'green.400'}>Forgot password?</Link>
                             </Stack>
                             <Button type='submit' bg={'green.400'} color={'white'} _hover={{ bg: 'green.500' }}>
                                 Sign in

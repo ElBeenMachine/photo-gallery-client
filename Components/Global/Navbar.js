@@ -2,6 +2,7 @@ import { Box, Flex, Avatar, HStack, IconButton, Button, Menu, MenuButton, MenuLi
 import { Link } from "@chakra-ui/next-js";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import Links from "./Links";
+import { signOut } from "next-auth/react";
 
 const NavLink = ({ children, href }) => {
     return (
@@ -45,7 +46,7 @@ const Navbar = () => {
                             <MenuItem>Link 2</MenuItem>
                             <MenuItem>Link 3</MenuItem>
                             <MenuDivider />
-                            <MenuItem>Link 4</MenuItem>
+                            <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
                         </MenuList>
                     </Menu>
                 </Flex>

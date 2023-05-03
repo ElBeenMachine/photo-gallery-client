@@ -1,6 +1,7 @@
 import { IconButton, Avatar, Box, CloseButton, Flex, HStack, VStack, Icon, useColorModeValue, Drawer, DrawerContent, Text, useDisclosure, BoxProps, FlexProps, Menu, MenuButton, MenuDivider, MenuItem, MenuList } from '@chakra-ui/react';
 import { Link } from "@chakra-ui/next-js";
 import { FiHome, FiTrendingUp, FiCompass, FiStar, FiSettings, FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
+import { signOut } from 'next-auth/react';
 
 const LinkItems = [
     { name: 'Home', icon: FiHome },
@@ -94,7 +95,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
                             <MenuItem>Settings</MenuItem>
                             <MenuItem>Billing</MenuItem>
                             <MenuDivider />
-                            <MenuItem>Sign out</MenuItem>
+                            <MenuItem onClick={() => signOut()}>Sign out</MenuItem>
                         </MenuList>
                     </Menu>
                 </Flex>
