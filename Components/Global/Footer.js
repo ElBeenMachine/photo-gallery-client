@@ -9,7 +9,7 @@ const SocialButton = ({ children, label, href }) => {
             <VisuallyHidden>{label}</VisuallyHidden>
             {children}
         </chakra.button>
-    )
+    );
 }
 
 const Footer = () => {
