@@ -1,24 +1,24 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { useSession } from 'next-auth/react';
-import { hasToken } from "@/utils/checkUser";
+import { isAdmin } from "@/utils/checkUser";
 
-export default function DashHome() {
+export default function Users() {
     return (
-        <Layout pageTitle = "Photo Gallery | My Dashboard">
+        <Layout pageTitle = "Photo Gallery | Manage Users">
             
         </Layout>
-    )
+    );
 }
 
 // Require authentication
 DashHome.auth = true;
 
 export async function getServerSideProps(context) {
-    const token = await hasToken(context.req);
+    const token = await isAdmin(context.req);
     if(!token) {
         return {
             redirect: {
-                destination: context.resolvedUrl ? `/auth/login?referer=${context.req.headers["x-forwarded-proto"] + '://' + context.req.headers.host + context.resolvedUrl}` : "/auth/login",
+                destination: "/dashboard",
                 permanent: false
             }
         }
