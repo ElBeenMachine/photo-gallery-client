@@ -2,7 +2,7 @@ import Layout from "@/Components/Dashboard/DashLayout";
 import { useSession } from 'next-auth/react';
 import { isAdmin } from "@/utils/checkUser";
 
-export default function Users() {
+export default function DashUsers() {
     return (
         <Layout pageTitle = "Photo Gallery | Manage Users">
             
@@ -11,7 +11,7 @@ export default function Users() {
 }
 
 // Require authentication
-DashHome.auth = true;
+DashUsers.auth = true;
 
 export async function getServerSideProps(context) {
     const token = await isAdmin(context.req);
