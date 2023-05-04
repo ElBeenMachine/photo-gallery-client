@@ -1,16 +1,9 @@
-import { IconButton, Avatar, Box, CloseButton, Flex, HStack, VStack, Icon, useColorModeValue, Drawer, DrawerContent, Text, useDisclosure, BoxProps, FlexProps, Menu, MenuButton, MenuDivider, MenuItem, MenuList } from '@chakra-ui/react';
+import { IconButton, Box, CloseButton, Flex, HStack, Icon, useColorModeValue, Drawer, DrawerContent, Text, useDisclosure } from '@chakra-ui/react';
 import { Link } from "@chakra-ui/next-js";
-import { FiHome, FiTrendingUp, FiCompass, FiStar, FiSettings, FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
-import { signOut } from 'next-auth/react';
+import { FiMenu } from 'react-icons/fi';
 import UserDropdown from '../Global/Navigation/UserDropdown';
-
-const LinkItems = [
-    { name: 'Home', icon: FiHome },
-    { name: 'Trending', icon: FiTrendingUp },
-    { name: 'Explore', icon: FiCompass },
-    { name: 'Favourites', icon: FiStar },
-    { name: 'Settings', icon: FiSettings },
-];
+import Links from "./DashLinks";
+import { useSession } from 'next-auth/react';
 
 const DashContent = ({ children }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -35,6 +28,7 @@ const DashContent = ({ children }) => {
 }
 
 const SidebarContent = ({ onClose, ...rest }) => {
+    const { data: session } = useSession();
     return (
         <Box transition="3s ease" bg={useColorModeValue('white', 'gray.900')} borderRight="1px" borderRightColor={useColorModeValue('gray.200', 'gray.700')} w={{ base: 'full', md: 60 }} pos="fixed" h="full" {...rest}> 
             <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
@@ -43,18 +37,22 @@ const SidebarContent = ({ onClose, ...rest }) => {
                 </Text>
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
-            {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon}>
-                    {link.name}
-                </NavItem>
+            {Links.map((link) => (
+                (link.roles.includes(session.user.role) ? (
+                    <NavItem key={link.name} href={link.path} icon={link.icon}>
+                        {link.name}
+                    </NavItem>
+                ) : (
+                    null
+                ))
             ))}
         </Box>
     );
 };
 
-const NavItem = ({ icon, children, ...rest }) => {
+const NavItem = ({ icon, children, href, ...rest }) => {
     return (
-        <Link href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+        <Link href={ href || "#"} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
             <Flex align="center" p="4" mx="4" borderRadius="lg" role="group" cursor="pointer" _hover={{ bg: 'green.400', color: 'white' }} {...rest}>
                 {icon && (
                     <Icon mr="4" fontSize="16" _groupHover={{ color: 'white' }} as={icon} />

@@ -14,7 +14,7 @@ const ProfileLink = ({ children, href }) => {
 }
 
 const UserDropdown = () => {
-    const { data: session } = useSession()
+    const { data: session } = useSession();
     return (
         <Flex alignItems={"center"}>
             <Menu>
