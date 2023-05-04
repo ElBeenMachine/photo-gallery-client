@@ -14,8 +14,18 @@ export default function DashUsers() {
 DashUsers.auth = true;
 
 export async function getServerSideProps(context) {
-    const token = await isAdmin(context.req);
+    const token = await hasToken(context.req);
     if(!token) {
+        return {
+            redirect: {
+                destination: context.resolvedUrl ? `/auth/login?referer=${context.req.headers["x-forwarded-proto"] + '://' + context.req.headers.host + context.resolvedUrl}` : "/auth/login",
+                permanent: false
+            }
+        }
+    }
+
+    const admin = await isAdmin(context.req);
+    if(!admin) {
         return {
             redirect: {
                 destination: "/dashboard",
