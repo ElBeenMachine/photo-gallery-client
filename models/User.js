@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const UserSchema = mongoose.model("User").schema
+const UserSchema = new mongoose.Schema({}, { strict: false });
 
-export default UserSchema;
+export default mongoose.models.User || mongoose.model("User", UserSchema);
