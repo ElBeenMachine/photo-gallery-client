@@ -1,24 +1,18 @@
-// Import mongoose
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-// Get the mongodb URI from the environment variable
 const MONGODB_URI=process.env.DB_URI;
 
-// If no URI provided, throw an error
 if(!MONGODB_URI) {
-    throw new Error("Please define the DB_URI environment variable");
+    throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-// Cache mongoose
 let cached = global.mongoose;
 
-// If there is no cache, create one
 if(!cached) {
     cached = global.mongoose = { conn: null, promise: null }
 }
 
-// Create the connect function
-module.exports = async() => {
+async function dbConnect() {
     if(cached.conn) return cached.conn;
 
     if(!cached.promise) {
@@ -35,3 +29,5 @@ module.exports = async() => {
         return cached.conn;
     }
 }
+
+export default dbConnect;
