@@ -5,7 +5,7 @@ const Links = [
     },
     {
         name: "Albums",
-        path: "/albums"
+        path: "/dashboard/albums"
     },
     {
         name: "The Developer",
