@@ -63,7 +63,10 @@ export default NextAuth({
 
         // If we want to access extra user information from sessions we have to pass the token here to get them in sync:
         session: async({ session, token }) => {
-            if(token) session.user = token.user;
+            if(token) {
+                session.user = token.user;
+                session.accessToken = token.accessToken;
+            }
             return session;
         }
     }

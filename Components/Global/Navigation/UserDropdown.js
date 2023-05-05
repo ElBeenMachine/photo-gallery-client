@@ -25,8 +25,6 @@ const UserDropdown = () => {
                     <MenuItem>Hi, { session.user.fname }!</MenuItem>
                     <MenuDivider />
                     <ProfileLink href={"/dashboard"}>My Dashboard</ProfileLink>
-                    <MenuItem>Link 2</MenuItem>
-                    <MenuItem>Link 3</MenuItem>
                     <MenuDivider />
                     <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
                 </MenuList>

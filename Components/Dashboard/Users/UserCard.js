@@ -1,6 +1,6 @@
 import { Heading, Avatar, Box, Image, Flex, Text, Stack, Button, useColorModeValue } from '@chakra-ui/react';
   
-const UserCard = ({ name, role, avatar, id}) => {
+const UserCard = ({ name, role, avatar, _id, handleFunction }) => {
     return (
         <Box minW={'250px'} maxW={'300px'} w={'full'} bg={useColorModeValue('white', 'gray.800')} boxShadow={'2xl'} rounded={'md'} overflow={'hidden'} m={3}>
             <Image h={'120px'} w={'full'} src={'https://images.unsplash.com/photo-1612865547334-09cb8cb455da?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80'} objectFit={'cover'} />
@@ -31,7 +31,7 @@ const UserCard = ({ name, role, avatar, id}) => {
                     </Stack>
                 </Stack> */}
 
-                <Button w={'full'} mt={8} bg={useColorModeValue('#151f21', 'gray.900')} color={'white'} rounded={'md'} _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}>
+                <Button id={_id} onClick={handleFunction} w={'full'} mt={8} bg={useColorModeValue('#151f21', 'gray.900')} color={'white'} rounded={'md'} _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}>
                     Edit User
                 </Button>
             </Box>
