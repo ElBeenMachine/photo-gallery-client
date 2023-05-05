@@ -1,0 +1,124 @@
+import Layout from "@/Components/Dashboard/DashLayout";
+import { hasToken } from "@/utils/checkUser";
+import AlbumCard from "@/Components/Dashboard/Albums/AlbumCard";
+import { Wrap, WrapItem, Button, Spinner, Flex, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react";
+import AlbumSchema from "@/models/Album";
+import dbConnect from "@/utils/dcConnect";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import handleError from "@/utils/fetchHandler";
+import { useRouter } from "next/router";
+
+export default function DashAlbums({ albums }) {
+    const router = useRouter();
+    const { data: session } = useSession();
+    const { isOpen: isOpenNew, onOpen: onOpenNew, onClose: onCloseNew } = useDisclosure();
+    const [loadingNewAlbum, setLoadingNewAlbum] = useState(false);
+
+    // Post request to create album
+    async function createUser(e) {
+        setLoadingNewAlbum(true);
+        e.preventDefault();
+        const userData = {
+            name: e.target.name.value
+        }
+
+        fetch(`${process.env.API_URL}/albums/create`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.accessToken}`
+            },
+            body: JSON.stringify(userData)
+        }).then(handleError).then(data => {
+            toast.success(data.message);
+            router.replace(router.asPath);
+            setLoadingNewAlbum(false);
+            return onCloseNew();
+        }).catch(err => {
+            toast.error("Error: " + err.message);
+            setLoadingNewAlbum(false);
+            return onCloseNew();
+        });
+    }
+
+    return (
+        <Layout pageTitle = "Photo Gallery | Manage Albums">
+
+            <Stack direction={"row"} p={5} pb={0}>
+                <Button onClick={onOpenNew} colorScheme='green'>
+                    New Album
+                </Button>
+            </Stack>
+
+            <Wrap p={6} align={"center"} justify={"center"} spacing='30px'>
+                { albums.length > 0 ? (
+                    albums.map(album => (
+                        <WrapItem key={album._id}>
+                            <AlbumCard name={ album.name } cover={album.cover} _id={album._id}/>
+                        </WrapItem>
+                    ))
+                ) : (
+                    <WrapItem as={"flex"} minH={300} justifyContent={"center"} alignItems={"center"}>
+                        <Text>No Albums Exist</Text>
+                    </WrapItem>
+                )}
+            </Wrap>
+
+            {/* New Album Modal */}
+            <Modal isOpen={isOpenNew} onClose={onCloseNew}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Create Album</ModalHeader>
+                    <ModalCloseButton />
+
+                    { loadingNewAlbum ? (
+                        <Flex justifyContent={"center"} alignItems={"center"} w={"100%"} minH={150}>
+                            <Spinner size='xl' />
+                        </Flex>
+                    ) : (
+                        <Stack as={"form"} onSubmit={createUser}>
+                            <ModalBody pb={6}>
+                                <FormControl>
+                                    <FormLabel>Album Name</FormLabel>
+                                    <Input name="name" placeholder='Enter a name' required />
+                                </FormControl>
+                            </ModalBody>
+            
+                            <ModalFooter>
+                                <Button type={"submit"} colorScheme='green' mr={3}>
+                                    Create Album
+                                </Button>
+                                <Button onClick={onCloseNew}>Cancel</Button>
+                            </ModalFooter>
+                        </Stack>
+                    )}
+                </ModalContent>
+            </Modal>
+        </Layout>
+    );
+}
+
+// Require authentication
+DashAlbums.auth = true;
+
+export async function getServerSideProps(context) {
+    const token = await hasToken(context.req);
+    if(!token) {
+        return {
+            redirect: {
+                destination: context.resolvedUrl ? `/auth/login?referer=${context.req.headers["x-forwarded-proto"] + '://' + context.req.headers.host + context.resolvedUrl}` : "/auth/login",
+                permanent: false
+            }
+        }
+    }
+
+    dbConnect();
+    const albums = await AlbumSchema.find()
+    const data = albums.map(album => {
+        return { _id: album._id, name: album.name, cover: album.cover }
+    });
+
+    return { props: { albums: JSON.parse(JSON.stringify(data)) } }
+}
