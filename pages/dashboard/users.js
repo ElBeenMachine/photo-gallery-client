@@ -1,12 +1,11 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { isAdmin, hasToken } from "@/utils/checkUser";
 import UserCard from "@/Components/Dashboard/Users/UserCard";
-import { Wrap, WrapItem } from "@chakra-ui/react";
+import { Wrap, WrapItem, Button, Spinner, Flex, Select, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react";
 import UserSchema from "@/models/User";
 import dbConnect from "@/utils/dcConnect";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { Button, Select, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from '@chakra-ui/react';
 import { toast } from "react-toastify";
 import handleError from "@/utils/fetchHandler";
 import { useRouter } from "next/router";
@@ -17,6 +16,7 @@ export default function DashUsers({ users }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isOpenNew, onOpen: onOpenNew, onClose: onCloseNew } = useDisclosure();
     const [loadingUser, setLoadingUser] = useState(false);
+    const [loadingNewUser, setLoadingNewUser] = useState(false);
     const [userData, setUserData] = useState({});
 
     // Open Edit modal when user is clicked
@@ -25,7 +25,6 @@ export default function DashUsers({ users }) {
         setLoadingUser(true);
         
         fetch(`/api/users/${e.target.id}`).then(handleError).then(data => {
-            console.log(data);
             setUserData(data.user);
             setLoadingUser(false);
         }).catch(err => {
@@ -37,6 +36,7 @@ export default function DashUsers({ users }) {
     // Post request to edit user
     async function editUser(e) {
         e.preventDefault();
+        setLoadingUser(true);
         fetch(`/api/users/update/${userData._id}`, {
             method: "POST",
             headers: {
@@ -46,16 +46,18 @@ export default function DashUsers({ users }) {
         }).then(handleError).then(data => {
             toast.success(data.message);
             router.replace(router.asPath);
+            setLoadingUser(false);
             return onClose();
         }).catch(err => {
             toast.error("Error: " + err.message);
+            setLoadingUser(false);
             return onClose();
         });
     }
 
     // Post request to create user
     async function createUser(e) {
-        console.log(session);
+        setLoadingNewUser(true);
         e.preventDefault();
         const userData = {
             fname: e.target.fname.value,
@@ -75,18 +77,19 @@ export default function DashUsers({ users }) {
         }).then(handleError).then(data => {
             toast.success(data.message);
             router.replace(router.asPath);
+            setLoadingNewUser(false);
             return onCloseNew();
         }).catch(err => {
             toast.error("Error: " + err.message);
+            setLoadingNewUser(false);
             return onCloseNew();
         });
     }
 
     // Delete request to delete user
     async function deleteUser(e) {
-        console.log(session);
         e.preventDefault();
-
+        setLoadingUser(true);
         fetch(`${process.env.API_URL}/users/delete`, {
             method: "DELETE",
             headers: {
@@ -97,9 +100,11 @@ export default function DashUsers({ users }) {
         }).then(handleError).then(data => {
             toast.success(data.message);
             router.replace(router.asPath);
+            setLoadingUser(false);
             return onClose();
         }).catch(err => {
             toast.error("Error: " + err.message);
+            setLoadingUser(false);
             return onClose();
         });
     }
@@ -111,8 +116,6 @@ export default function DashUsers({ users }) {
         userData[field] = updatedKeyword;
     }
 
-    console.log(users.length);
-
     return (
         <Layout pageTitle = "Photo Gallery | Manage Users">
 
@@ -122,7 +125,6 @@ export default function DashUsers({ users }) {
                 </Button>
             </Stack>
 
-            {/* Users Container */}
             <Wrap p={6} align={"center"} justify={"center"} spacing='30px'>
                 { users.length > 1 ? (
                     users.map(user => (
@@ -137,8 +139,6 @@ export default function DashUsers({ users }) {
                         <Text>No Users Exist</Text>
                     </WrapItem>
                 )}
-
-                
             </Wrap>
 
             {/* New User Modal */}
@@ -147,44 +147,51 @@ export default function DashUsers({ users }) {
                 <ModalContent>
                     <ModalHeader>Create User</ModalHeader>
                     <ModalCloseButton />
-                    <Stack as={"form"} onSubmit={createUser}>
-                        <ModalBody pb={6}>
-                            <FormControl>
-                                <FormLabel>First name</FormLabel>
-                                <Input name="fname" placeholder='First name' required />
-                            </FormControl>
-        
-                            <FormControl mt={4}>
-                                <FormLabel>Last name</FormLabel>
-                                <Input name="lname" placeholder='Last name' required />
-                            </FormControl>
-        
-                            <FormControl mt={4}>
-                                <FormLabel>Email</FormLabel>
-                                <Input name="email" type="email" placeholder='Email' required />
-                            </FormControl>
-                            
-                            <FormControl mt={4}>
-                                <FormLabel>Username</FormLabel>
-                                <Input name="username" placeholder='Username' required />
-                            </FormControl>
 
-                            <FormControl mt={4}>
-                                <FormLabel>Role</FormLabel>
-                                <Select name="role" required>
-                                    <option value='user'>User</option>
-                                    <option value='admin'>Admin</option>
-                                </Select>
-                            </FormControl>
-                        </ModalBody>
-        
-                        <ModalFooter>
-                            <Button type={"submit"} colorScheme='green' mr={3}>
-                                Create User
-                            </Button>
-                            <Button onClick={onCloseNew}>Cancel</Button>
-                        </ModalFooter>
-                    </Stack>
+                    { loadingNewUser ? (
+                        <Flex justifyContent={"center"} alignItems={"center"} w={"100%"} minH={150}>
+                            <Spinner size='xl' />
+                        </Flex>
+                    ) : (
+                        <Stack as={"form"} onSubmit={createUser}>
+                            <ModalBody pb={6}>
+                                <FormControl>
+                                    <FormLabel>First name</FormLabel>
+                                    <Input name="fname" placeholder='First name' required />
+                                </FormControl>
+            
+                                <FormControl mt={4}>
+                                    <FormLabel>Last name</FormLabel>
+                                    <Input name="lname" placeholder='Last name' required />
+                                </FormControl>
+            
+                                <FormControl mt={4}>
+                                    <FormLabel>Email</FormLabel>
+                                    <Input name="email" type="email" placeholder='Email' required />
+                                </FormControl>
+                                
+                                <FormControl mt={4}>
+                                    <FormLabel>Username</FormLabel>
+                                    <Input name="username" placeholder='Username' required />
+                                </FormControl>
+
+                                <FormControl mt={4}>
+                                    <FormLabel>Role</FormLabel>
+                                    <Select name="role" required>
+                                        <option value='user'>User</option>
+                                        <option value='admin'>Admin</option>
+                                    </Select>
+                                </FormControl>
+                            </ModalBody>
+            
+                            <ModalFooter>
+                                <Button type={"submit"} colorScheme='green' mr={3}>
+                                    Create User
+                                </Button>
+                                <Button onClick={onCloseNew}>Cancel</Button>
+                            </ModalFooter>
+                        </Stack>
+                    )}
                 </ModalContent>
             </Modal>
 
@@ -195,7 +202,11 @@ export default function DashUsers({ users }) {
                     <ModalHeader>Edit User</ModalHeader>
                     <ModalCloseButton />
                     
-                    { loadingUser ? (<p>Loading</p>) : (
+                    { loadingUser ? (
+                        <Flex justifyContent={"center"} alignItems={"center"} w={"100%"} minH={150}>
+                            <Spinner size='xl' />
+                        </Flex>
+                    ) : (
                         <Stack as={"form"} onSubmit={editUser}>
                             <ModalBody pb={6}>
                                 <FormControl>
@@ -242,7 +253,6 @@ export default function DashUsers({ users }) {
                     )}
                 </ModalContent>
             </Modal>
-
         </Layout>
     );
 }
