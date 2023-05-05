@@ -4,17 +4,245 @@ import UserCard from "@/Components/Dashboard/Users/UserCard";
 import { Wrap, WrapItem } from "@chakra-ui/react";
 import UserSchema from "@/models/User";
 import dbConnect from "@/utils/dcConnect";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { Button, Select, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from '@chakra-ui/react';
+import { toast } from "react-toastify";
+import handleError from "@/utils/fetchHandler";
+import { useRouter } from "next/router";
 
 export default function DashUsers({ users }) {
+    const router = useRouter();
+    const { data: session } = useSession();
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: isOpenNew, onOpen: onOpenNew, onClose: onCloseNew } = useDisclosure();
+    const [loadingUser, setLoadingUser] = useState(false);
+    const [userData, setUserData] = useState({});
+
+    // Open Edit modal when user is clicked
+    async function handleEditButton(e) {
+        onOpen();
+        setLoadingUser(true);
+        
+        fetch(`/api/users/${e.target.id}`).then(handleError).then(data => {
+            console.log(data);
+            setUserData(data.user);
+            setLoadingUser(false);
+        }).catch(err => {
+            toast.error("Error: " + err.message);
+            return onClose();
+        });
+    }
+
+    // Post request to edit user
+    async function editUser(e) {
+        e.preventDefault();
+        fetch(`/api/users/update/${userData._id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData)
+        }).then(handleError).then(data => {
+            toast.success(data.message);
+            router.replace(router.asPath);
+            return onClose();
+        }).catch(err => {
+            toast.error("Error: " + err.message);
+            return onClose();
+        });
+    }
+
+    // Post request to create user
+    async function createUser(e) {
+        console.log(session);
+        e.preventDefault();
+        const userData = {
+            fname: e.target.fname.value,
+            lname: e.target.lname.value,
+            email: e.target.email.value,
+            username: e.target.username.value,
+            role: e.target.role.value
+        }
+
+        fetch(`${process.env.API_URL}/users/create`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.accessToken}`
+            },
+            body: JSON.stringify(userData)
+        }).then(handleError).then(data => {
+            toast.success(data.message);
+            router.replace(router.asPath);
+            return onCloseNew();
+        }).catch(err => {
+            toast.error("Error: " + err.message);
+            return onCloseNew();
+        });
+    }
+
+    // Delete request to delete user
+    async function deleteUser(e) {
+        console.log(session);
+        e.preventDefault();
+
+        fetch(`${process.env.API_URL}/users/delete`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.accessToken}`
+            },
+            body: JSON.stringify({ _id: userData._id })
+        }).then(handleError).then(data => {
+            toast.success(data.message);
+            router.replace(router.asPath);
+            return onClose();
+        }).catch(err => {
+            toast.error("Error: " + err.message);
+            return onClose();
+        });
+    }
+
+    // On Input Change (Edits)
+    function inputChangedHandler (e) {
+        const updatedKeyword = e.currentTarget.value;
+        const field = e.target.dataset.field;
+        userData[field] = updatedKeyword;
+    }
+
+    console.log(users.length);
+
     return (
         <Layout pageTitle = "Photo Gallery | Manage Users">
+
+            <Stack direction={"row"} p={5} pb={0}>
+                <Button onClick={onOpenNew} colorScheme='green'>
+                    New User
+                </Button>
+            </Stack>
+
+            {/* Users Container */}
             <Wrap p={6} align={"center"} justify={"center"} spacing='30px'>
-                { users.map(user => (    
-                    <WrapItem>
-                        <UserCard name={user.fname + " " + user.lname} role={user.role} avatar={user.avatar} _id={user._id}/>
+                { users.length > 1 ? (
+                    users.map(user => (
+                        ( user._id != session.user._id ? (
+                            <WrapItem key={user._id}>
+                                <UserCard handleFunction={handleEditButton} name={user.fname + " " + user.lname} role={user.role} avatar={user.avatar} _id={user._id}/>
+                            </WrapItem>
+                        ) : (null)) 
+                    ))
+                ) : (
+                    <WrapItem as={"flex"} minH={300} justifyContent={"center"} alignItems={"center"}>
+                        <Text>No Users Exist</Text>
                     </WrapItem>
-                ))}
+                )}
+
+                
             </Wrap>
+
+            {/* New User Modal */}
+            <Modal isOpen={isOpenNew} onClose={onCloseNew}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Create User</ModalHeader>
+                    <ModalCloseButton />
+                    <Stack as={"form"} onSubmit={createUser}>
+                        <ModalBody pb={6}>
+                            <FormControl>
+                                <FormLabel>First name</FormLabel>
+                                <Input name="fname" placeholder='First name' required />
+                            </FormControl>
+        
+                            <FormControl mt={4}>
+                                <FormLabel>Last name</FormLabel>
+                                <Input name="lname" placeholder='Last name' required />
+                            </FormControl>
+        
+                            <FormControl mt={4}>
+                                <FormLabel>Email</FormLabel>
+                                <Input name="email" type="email" placeholder='Email' required />
+                            </FormControl>
+                            
+                            <FormControl mt={4}>
+                                <FormLabel>Username</FormLabel>
+                                <Input name="username" placeholder='Username' required />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                                <FormLabel>Role</FormLabel>
+                                <Select name="role" required>
+                                    <option value='user'>User</option>
+                                    <option value='admin'>Admin</option>
+                                </Select>
+                            </FormControl>
+                        </ModalBody>
+        
+                        <ModalFooter>
+                            <Button type={"submit"} colorScheme='green' mr={3}>
+                                Create User
+                            </Button>
+                            <Button onClick={onCloseNew}>Cancel</Button>
+                        </ModalFooter>
+                    </Stack>
+                </ModalContent>
+            </Modal>
+
+            {/* Edit User Modal */}
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Edit User</ModalHeader>
+                    <ModalCloseButton />
+                    
+                    { loadingUser ? (<p>Loading</p>) : (
+                        <Stack as={"form"} onSubmit={editUser}>
+                            <ModalBody pb={6}>
+                                <FormControl>
+                                    <FormLabel>First name</FormLabel>
+                                    <Input id={"firstName"} onChange={inputChangedHandler} data-field={"fname"} placeholder='First name' defaultValue={userData.fname || ""} required />
+                                </FormControl>
+            
+                                <FormControl mt={4}>
+                                    <FormLabel>Last name</FormLabel>
+                                    <Input id={"lastName"} onChange={inputChangedHandler} data-field={"lname"} placeholder='Last name' defaultValue={userData.lname || ""} required />
+                                </FormControl>
+            
+                                <FormControl mt={4}>
+                                    <FormLabel>Email</FormLabel>
+                                    <Input id={"email"} type="email" onChange={inputChangedHandler} data-field={"email"} placeholder='Email' defaultValue={userData.email || ""} required />
+                                </FormControl>
+                                
+                                <FormControl mt={4}>
+                                    <FormLabel>Username</FormLabel>
+                                    <Input id={"username"} onChange={inputChangedHandler} data-field={"username"} placeholder='Username' defaultValue={userData.username || ""} required />
+                                </FormControl>
+
+                                <FormControl mt={4}>
+                                    <FormLabel>Role</FormLabel>
+                                    <Select onChange={inputChangedHandler} data-field={"role"} defaultValue={userData.role} required>
+                                        <option value='user'>User</option>
+                                        <option value='admin'>Admin</option>
+                                    </Select>
+                                </FormControl>
+                            </ModalBody>
+            
+                            <ModalFooter>
+                                <Button type={"submit"} colorScheme='blue' mr={3}>
+                                    Save
+                                </Button>
+                                <Button onClick={deleteUser} colorScheme='red' mr={3}>
+                                    Delete User
+                                </Button>
+                                <Button onClick={onClose}>
+                                    Cancel
+                                </Button>
+                            </ModalFooter>
+                        </Stack>
+                    )}
+                </ModalContent>
+            </Modal>
+
         </Layout>
     );
 }
