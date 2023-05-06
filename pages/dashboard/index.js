@@ -1,42 +1,43 @@
 import Layout from "@/Components/Dashboard/DashLayout";
-import { Flex, Button, Text, Heading, Stack, Box, Wrap, WrapItem, Icon, useColorModeValue } from "@chakra-ui/react";
+import { Heading, Wrap, WrapItem } from "@chakra-ui/react";
 import { hasToken } from "@/utils/checkUser";
-import {
-    FcAbout,
-    FcAssistant,
-    FcCollaboration,
-    FcDonate,
-    FcManager,
-  } from 'react-icons/fc';
-import { Link } from "@chakra-ui/next-js";
+import { FcAddImage, FcCamera, FcConferenceCall, FcDataBackup, FcFolder } from 'react-icons/fc';
+import { useSession } from "next-auth/react";
+import HomeCard from "@/Components/Dashboard/Home/Card";
 
-const Card = ({ heading, description, icon, href }) => {
-    return (
-        <Box  bg={"white"} w={'100%'} borderWidth="1px" borderRadius="lg" overflow="hidden" p={5}>
-            <Stack align={'start'} spacing={2}>
-                <Flex w={16} h={16} align={'center'} justify={'center'} color={'white'} rounded={'full'} bg={useColorModeValue('gray.100', 'gray.700')}> 
-                    {icon}
-                </Flex>
-                <Box mt={2}>
-                    <Heading size="md">{heading}</Heading>
-                    <Text mt={1} fontSize={'sm'}>
-                        {description}
-                    </Text>
-                </Box>
-                <Link href={href} fontWeight={"bold"} color={"blue.600"} size={'sm'}>
-                    Learn more
-                </Link>
-            </Stack>
-        </Box>
-    );
+import User from "@/models/User";
+import Album from "@/models/Album";
+import Image from "@/models/Image";
+
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(bytes < thresh) return bytes + ' B';
+    var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(bytes >= thresh);
+    return bytes.toFixed(1)+' '+units[u];
 };
 
-export default function DashHome() {
+export default function DashHome({ userCount, albumCount, imageCount, storageUsed }) {
+    const { data: session } = useSession();
     return (
         <Layout pageTitle = "Photo Gallery | My Dashboard">
-            <Wrap p={6} align={"center"} justify={"center"} spacing='30px'w={"100%"}>
-                <WrapItem maxW={{ base: '100%', md: '50%' }}>
-                    <Card heading={'Heading'} icon={<Icon as={FcAssistant} w={10} h={10} />} description={ 'Lorem ipsum dolor sit amet catetur, adipisicing elit.' } href={'#'} />
+            <Heading p={6} pb={0} as={"h1"}>Welcome back, {session.user.fname}!</Heading>
+            <Wrap p={6} align={"center"} justify={"start"} spacing='30px'w={"100%"} style={{ flexGrow: 1 }}>
+                <WrapItem maxW={{ base: '100%', lg: 'calc(50% - 30px)' }} w={"100%"}>
+                    <HomeCard heading={`${userCount} Users`} icon={FcConferenceCall} description={ 'Registered on the platform.' } href={"/dashboard/users"} />
+                </WrapItem>
+                <WrapItem maxW={{ base: '100%', lg: 'calc(50% - 30px)' }} w={"100%"}>
+                    <HomeCard heading={`${albumCount} Albums`} icon={FcFolder} description={ 'Shared on the platform.' } href={"/dashboard/users"} />
+                </WrapItem>
+                <WrapItem maxW={{ base: '100%', lg: 'calc(50% - 30px)' }} w={"100%"}>
+                    <HomeCard heading={`${imageCount} ${ imageCount == 1 ? 'Image' : 'Images'}`} icon={FcAddImage} description={ `Stored on the platform.` } href={"/dashboard/users"} />
+                </WrapItem>
+                <WrapItem maxW={{ base: '100%', lg: 'calc(50% - 30px)' }} w={"100%"}>
+                    <HomeCard heading={`${humanFileSize(storageUsed, 1)}`} icon={FcDataBackup} description={ 'Storage used on the platform.' } href={"/dashboard/users"} />
                 </WrapItem>
             </Wrap>
         </Layout>
@@ -57,5 +58,19 @@ export async function getServerSideProps(context) {
         }
     }
 
-    return { props: {} }
+    const users = await User.find().select({ password: 0 });
+    const userCount = users.length;
+
+    const albums = await Album.find();
+    const albumCount = await albums.length;
+
+    let storageUsed = 0;
+
+    const images = await Image.find().select({ fileSize: 1 });
+    for(let image of images) {
+        storageUsed += image.fileSize;
+    }
+    const imageCount = images.length;
+
+    return { props: { albumCount, userCount, imageCount, storageUsed } }
 }
