@@ -1,8 +1,9 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { hasToken } from "@/utils/checkUser";
 import AlbumCard from "@/Components/Dashboard/Albums/AlbumCard";
-import { Wrap, WrapItem, Button, Spinner, Flex, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react";
+import { Wrap, WrapItem, Button, Spinner, Flex, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, Textarea } from "@chakra-ui/react";
 import AlbumSchema from "@/models/Album";
+import UserSchema from "@/models/User";
 import dbConnect from "@/utils/dcConnect";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -21,7 +22,8 @@ export default function DashAlbums({ albums }) {
         setLoadingNewAlbum(true);
         e.preventDefault();
         const userData = {
-            name: e.target.name.value
+            name: e.target.name.value,
+            description: e.target.description.value
         }
 
         fetch(`${process.env.API_URL}/albums/create`, {
@@ -56,7 +58,7 @@ export default function DashAlbums({ albums }) {
                 { albums.length > 0 ? (
                     albums.map(album => (
                         <WrapItem key={album._id}>
-                            <AlbumCard name={ album.name } cover={album.cover} _id={album._id}/>
+                            <AlbumCard album={album} />
                         </WrapItem>
                     ))
                 ) : (
@@ -83,6 +85,11 @@ export default function DashAlbums({ albums }) {
                                 <FormControl>
                                     <FormLabel>Album Name</FormLabel>
                                     <Input name="name" placeholder='Enter a name' required />
+                                </FormControl>
+                                
+                                <FormControl>
+                                    <FormLabel>Album Description</FormLabel>
+                                    <Textarea resize={"vertical"} h={100} maxH={150} maxLength={200} name="description" placeholder='Enter a description' required />
                                 </FormControl>
                             </ModalBody>
             
@@ -115,10 +122,16 @@ export async function getServerSideProps(context) {
     }
 
     dbConnect();
-    const albums = await AlbumSchema.find()
-    const data = albums.map(album => {
-        return { _id: album._id, name: album.name, cover: album.cover }
+    let albums = await AlbumSchema.find()
+    let data = albums.map(album => {
+        return { _id: album._id, name: album.name, description: album.description, cover: album.cover, createdBy: album.createdBy }
     });
+
+    for(let album of data) {
+        await UserSchema.findOne({ _id: album.createdBy }).select({ password: 0, role: 0, email: 0, createdAt: 0, username: 0, __v: 0 }).then((user) => {
+            album.author = user;
+        });
+    }
 
     return { props: { albums: JSON.parse(JSON.stringify(data)) } }
 }
