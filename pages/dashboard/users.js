@@ -133,7 +133,7 @@ export default function DashUsers({ users }) {
                 </Menu>
             </AdminBar>
 
-            <Wrap p={6} align={"center"} justify={"center"} spacing='30px'>
+            <Wrap p={6} align={"center"} justify={"center"} spacing='30px' flexGrow={1}>
                 { users.length > 1 ? (
                     users.map(user => (
                         ( user._id != session.user._id ? (
