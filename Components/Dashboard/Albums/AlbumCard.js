@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { Box, Center, Heading, Text, Stack, Avatar, useColorModeValue } from '@chakra-ui/react';
 import { toast } from 'react-toastify';
+import moment from 'moment/moment';
 
 export default function AlbumCard({ album }) {
     function openAlbum(e) {
@@ -28,7 +29,7 @@ export default function AlbumCard({ album }) {
                     <Avatar src={ album.author.avatar} alt={'Author'} />
                     <Stack direction={'column'} spacing={0} fontSize={'sm'}>
                         <Text fontWeight={600}>{ album.author.fname + " " + album.author.lname}</Text>
-                        <Text color={'gray.500'}>Feb 08, 2021</Text>
+                        <Text color={'gray.500'}> {moment(album.createdAt).format("LL")}</Text>
                     </Stack>
                 </Stack>
             </Box>
