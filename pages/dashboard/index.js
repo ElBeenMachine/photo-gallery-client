@@ -31,13 +31,13 @@ export default function DashHome({ userCount, albumCount, imageCount, storageUse
                     <HomeCard heading={`${userCount} Users`} icon={FcConferenceCall} description={ 'Registered on the platform.' } href={"/dashboard/users"} />
                 </WrapItem>
                 <WrapItem maxW={{ base: '100%', lg: 'calc(50% - 30px)' }} w={"100%"}>
-                    <HomeCard heading={`${albumCount} Albums`} icon={FcFolder} description={ 'Shared on the platform.' } href={"/dashboard/users"} />
+                    <HomeCard heading={`${albumCount} Albums`} icon={FcFolder} description={ 'Shared on the platform.' } href={"/dashboard/albums"} />
                 </WrapItem>
                 <WrapItem maxW={{ base: '100%', lg: 'calc(50% - 30px)' }} w={"100%"}>
-                    <HomeCard heading={`${imageCount} ${ imageCount == 1 ? 'Image' : 'Images'}`} icon={FcAddImage} description={ `Stored on the platform.` } href={"/dashboard/users"} />
+                    <HomeCard heading={`${imageCount} ${ imageCount == 1 ? 'Image' : 'Images'}`} icon={FcAddImage} description={ `Stored on the platform.` } href={"/dashboard/albums"} />
                 </WrapItem>
                 <WrapItem maxW={{ base: '100%', lg: 'calc(50% - 30px)' }} w={"100%"}>
-                    <HomeCard heading={`${humanFileSize(storageUsed, 1)}`} icon={FcDataBackup} description={ 'Storage used on the platform.' } href={"/dashboard/users"} />
+                    <HomeCard heading={`${humanFileSize(storageUsed, 1)}`} icon={FcDataBackup} description={ 'Storage used on the platform.' } href={"/dashboard/albums"} />
                 </WrapItem>
             </Wrap>
         </Layout>
