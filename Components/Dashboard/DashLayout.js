@@ -1,6 +1,7 @@
 import Head from "next/head";
 import DashContent from "./DashContent";
 import Footer from "../Global/Footer";
+import { Flex } from "@chakra-ui/react";
 
 const Layout = (props) => {
     return (
@@ -14,8 +15,10 @@ const Layout = (props) => {
             </Head>
             <div>  
                 <DashContent>
-                    {props.children}
-                    <Footer />
+                    <Flex as="flex" flexDirection={"column"} justifyContent={"space-between"} minH={"calc(100vh - 80px)"} h={"auto"}>
+                        {props.children}
+                        <Footer />
+                    </Flex>
                 </DashContent>
             </div>
         </div>

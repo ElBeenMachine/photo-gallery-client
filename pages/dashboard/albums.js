@@ -62,7 +62,7 @@ export default function DashAlbums({ albums }) {
                 </AdminBar>
             ) : (null) }
 
-            <Wrap p={6} align={"center"} w={"100%"} justify={"center"} spacing='30px'>
+            <Wrap p={6} align={"center"} w={"100%"} justify={"center"} spacing='30px' flexGrow={1}>
                 { albums.length > 0 ? (
                     albums.map(album => (
                         <WrapItem w={"100%"} maxW={{ base: "90%", md: "445px" }} key={album._id}>
