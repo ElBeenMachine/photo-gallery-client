@@ -1,7 +1,8 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { isAdmin, hasToken } from "@/utils/checkUser";
 import UserCard from "@/Components/Dashboard/Users/UserCard";
-import { Wrap, WrapItem, Button, Spinner, Flex, Select, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem, Wrap, WrapItem, Button, Spinner, Flex, Select, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react";
+import { PlusSquareIcon, HamburgerIcon } from "@chakra-ui/icons";
 import UserSchema from "@/models/User";
 import dbConnect from "@/utils/dcConnect";
 import { useSession } from "next-auth/react";
@@ -9,6 +10,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import handleError from "@/utils/fetchHandler";
 import { useRouter } from "next/router";
+import AdminBar from "@/Components/Dashboard/AdminBar";
 
 export default function DashUsers({ users }) {
     const router = useRouter();
@@ -118,18 +120,24 @@ export default function DashUsers({ users }) {
 
     return (
         <Layout pageTitle = "Photo Gallery | Manage Users">
-
-            <Stack direction={"row"} p={5} pb={0}>
-                <Button onClick={onOpenNew} colorScheme='green'>
-                    New User
-                </Button>
-            </Stack>
+            <AdminBar>
+                <Menu>
+                    <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
+                        <Button onClick={onOpenNew}>
+                            <HamburgerIcon boxSize={25} />
+                        </Button>
+                    </MenuButton>
+                    <MenuList>
+                        <MenuItem onClick={onOpenNew}>Create a new user</MenuItem>
+                    </MenuList>
+                </Menu>
+            </AdminBar>
 
             <Wrap p={6} align={"center"} justify={"center"} spacing='30px'>
                 { users.length > 1 ? (
                     users.map(user => (
                         ( user._id != session.user._id ? (
-                            <WrapItem key={user._id}>
+                            <WrapItem w={"100%"} maxW={{ base: "90%", md: "350px" }} key={user._id}>
                                 <UserCard handleFunction={handleEditButton} name={user.fname + " " + user.lname} role={user.role} avatar={user.avatar} _id={user._id}/>
                             </WrapItem>
                         ) : (null)) 

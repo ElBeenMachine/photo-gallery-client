@@ -1,7 +1,7 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { hasToken } from "@/utils/checkUser";
 import AlbumCard from "@/Components/Dashboard/Albums/AlbumCard";
-import { Wrap, WrapItem, Button, Spinner, Flex, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, Textarea } from "@chakra-ui/react";
+import { Wrap, WrapItem, Button, Spinner, Flex, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, Textarea, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import AlbumSchema from "@/models/Album";
 import UserSchema from "@/models/User";
 import dbConnect from "@/utils/dcConnect";
@@ -10,6 +10,8 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import handleError from "@/utils/fetchHandler";
 import { useRouter } from "next/router";
+import AdminBar from "@/Components/Dashboard/AdminBar";
+import { HamburgerIcon } from "@chakra-ui/icons";
 
 export default function DashAlbums({ albums }) {
     const router = useRouter();
@@ -47,17 +49,23 @@ export default function DashAlbums({ albums }) {
 
     return (
         <Layout pageTitle = "Photo Gallery | Manage Albums">
+            { session.user.role == "admin" ? (
+                <AdminBar>
+                    <Menu>
+                        <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
+                            <HamburgerIcon boxSize={25} />
+                        </MenuButton>
+                        <MenuList>
+                            <MenuItem onClick={onOpenNew}>Create a new album</MenuItem>
+                        </MenuList>
+                    </Menu>
+                </AdminBar>
+            ) : (null) }
 
-            <Stack direction={"row"} p={5} pb={0}>
-                <Button onClick={onOpenNew} colorScheme='green'>
-                    New Album
-                </Button>
-            </Stack>
-
-            <Wrap p={6} align={"center"} justify={"center"} spacing='30px'>
+            <Wrap p={6} align={"center"} w={"100%"} justify={"center"} spacing='30px'>
                 { albums.length > 0 ? (
                     albums.map(album => (
-                        <WrapItem key={album._id}>
+                        <WrapItem w={"100%"} maxW={{ base: "90%", md: "445px" }} key={album._id}>
                             <AlbumCard album={album} />
                         </WrapItem>
                     ))

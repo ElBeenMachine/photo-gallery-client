@@ -2,7 +2,7 @@ import { Heading, Avatar, Box, Image, Flex, Text, Stack, Button, useColorModeVal
   
 const UserCard = ({ name, role, avatar, _id, handleFunction }) => {
     return (
-        <Box minW={'250px'} maxW={'300px'} w={'full'} bg={useColorModeValue('white', 'gray.800')} boxShadow={'2xl'} rounded={'md'} overflow={'hidden'} m={3}>
+        <Box w={'100%'} bg={useColorModeValue('white', 'gray.800')} boxShadow={'2xl'} rounded={'md'} overflow={'hidden'} m={3}>
             <Image h={'120px'} w={'full'} src={'https://images.unsplash.com/photo-1612865547334-09cb8cb455da?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80'} objectFit={'cover'} />
             <Flex justify={'center'} mt={-12}>
                 <Avatar size={'xl'} src={ avatar } alt={'Author'} css={{border: '2px solid white',}} />
