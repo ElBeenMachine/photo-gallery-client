@@ -16,21 +16,6 @@ const UserCard = ({ name, role, avatar, _id, handleFunction }) => {
                     <Text color={'gray.500'}>{ role.charAt(0).toUpperCase() + role.slice(1) }</Text>
                 </Stack>
 
-                {/* <Stack direction={'row'} justify={'center'} spacing={6}>
-                    <Stack spacing={0} align={'center'}>
-                        <Text fontWeight={600}>23k</Text>
-                        <Text fontSize={'sm'} color={'gray.500'}>
-                            Followers
-                        </Text>
-                    </Stack>
-                    <Stack spacing={0} align={'center'}>
-                        <Text fontWeight={600}>23k</Text>
-                        <Text fontSize={'sm'} color={'gray.500'}>
-                            Followers
-                        </Text>
-                    </Stack>
-                </Stack> */}
-
                 <Button id={_id} onClick={handleFunction} w={'full'} mt={8} bg={useColorModeValue('#151f21', 'gray.900')} color={'white'} rounded={'md'} _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}>
                     Edit User
                 </Button>

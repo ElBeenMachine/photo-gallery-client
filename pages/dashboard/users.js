@@ -3,7 +3,7 @@ import { isAdmin, hasToken } from "@/utils/checkUser";
 import UserCard from "@/Components/Dashboard/Users/UserCard";
 import { Menu, MenuButton, MenuList, MenuItem, Wrap, WrapItem, Button, Spinner, Flex, Select, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react";
 import { PlusSquareIcon, HamburgerIcon } from "@chakra-ui/icons";
-import UserSchema from "@/models/User";
+import User from "@/models/User";
 import dbConnect from "@/utils/dcConnect";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -290,7 +290,7 @@ export async function getServerSideProps(context) {
     }
 
     dbConnect();
-    const users = await UserSchema.find();
+    const users = await User.find();
     const data = users.map(user => {
         return { _id: user._id, fname: user.fname, lname: user.lname, role: user.role, avatar: user.avatar }
     });

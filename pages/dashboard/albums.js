@@ -2,8 +2,8 @@ import Layout from "@/Components/Dashboard/DashLayout";
 import { hasToken } from "@/utils/checkUser";
 import AlbumCard from "@/Components/Dashboard/Albums/AlbumCard";
 import { Wrap, WrapItem, Button, Spinner, Flex, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, Textarea, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import AlbumSchema from "@/models/Album";
-import UserSchema from "@/models/User";
+import Album from "@/models/Album";
+import User from "@/models/User";
 import dbConnect from "@/utils/dcConnect";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -130,13 +130,13 @@ export async function getServerSideProps(context) {
     }
 
     dbConnect();
-    let albums = await AlbumSchema.find()
+    let albums = await Album.find()
     let data = albums.map(album => {
         return { _id: album._id, name: album.name, description: album.description, cover: album.cover, createdBy: album.createdBy }
     });
 
     for(let album of data) {
-        await UserSchema.findOne({ _id: album.createdBy }).select({ password: 0, role: 0, email: 0, createdAt: 0, username: 0, __v: 0 }).then((user) => {
+        await User.findOne({ _id: album.createdBy }).select({ password: 0, role: 0, email: 0, createdAt: 0, username: 0, __v: 0 }).then((user) => {
             album.author = user;
         });
     }
