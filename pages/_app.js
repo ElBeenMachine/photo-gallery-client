@@ -1,5 +1,5 @@
 import '@/styles/globals.css'
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, Flex, Spinner } from '@chakra-ui/react';
 import { SessionProvider } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
 import { useSession } from 'next-auth/react';
@@ -27,6 +27,10 @@ export default function App({ Component, pageProps: { session, ...pageProps }}) 
 
 function Auth({ children }) {
     const { data: session, status, loading } = useSession({required: true});
-    if(status === "loading") return "Loading...";
+    if(status === "loading") return (
+        <Flex w={"100%"} h={"100vh"} justifyContent={'center'} alignItems={'center'}>
+            <Spinner w={30} h={30} size={"xl"} />
+        </Flex>
+    );
     return children;
 }
