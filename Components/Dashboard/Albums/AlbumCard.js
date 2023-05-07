@@ -2,10 +2,12 @@ import Image from 'next/image';
 import { Box, Center, Heading, Text, Stack, Avatar, useColorModeValue } from '@chakra-ui/react';
 import { toast } from 'react-toastify';
 import moment from 'moment/moment';
+import { useRouter } from 'next/router';
 
 export default function AlbumCard({ album }) {
+    const router = useRouter();
     function openAlbum(e) {
-        toast.warn(`This feature is not currently available. However, the album ID is ${e.currentTarget.id}`);
+        router.push(`/dashboard/albums/${e.currentTarget.id}`);
     }
 
     return (
