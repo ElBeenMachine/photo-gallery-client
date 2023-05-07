@@ -19,6 +19,7 @@ import { Image } from "@chakra-ui/react";
 import handleError from "@/utils/fetchHandler";
 
 import { toast } from "react-toastify";
+import ImageCard from "@/Components/Dashboard/Albums/ImageCard";
 
 export default function DashAlbums({ album }) {
     const router = useRouter();
@@ -48,6 +49,10 @@ export default function DashAlbums({ album }) {
         });
     }
 
+    function finishLoad(e) {
+        console.log(e.currentTarget.parentElement.isLoaded);
+    }
+
     return (
         <Layout pageTitle = { `Photo Gallery | ${album.name}` }>
             { session.user.role == "admin" ? (
@@ -71,9 +76,7 @@ export default function DashAlbums({ album }) {
             { album.images.length > 0 ? (
                 <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3, 4], columnGap: "8px" }}>
                     {album.images.map((image) => (
-                        <Skeleton w={"100%"}>
-                            <Image key={image.url} w="100%" d="inline-block" src={image.url} mb={"8px"} borderRadius={"xl"} alt="Alt" />
-                        </Skeleton>
+                        <ImageCard image={image} />
                     ))}
                 </Box>
             ) : (
