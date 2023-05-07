@@ -143,7 +143,7 @@ export default function DashUsers({ users }) {
                         ) : (null)) 
                     ))
                 ) : (
-                    <WrapItem as={"flex"} minH={300} justifyContent={"center"} alignItems={"center"}>
+                    <WrapItem as={"div"} minH={300} justifyContent={"center"} alignItems={"center"}>
                         <Text>No Users Exist</Text>
                     </WrapItem>
                 )}

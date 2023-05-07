@@ -9,7 +9,7 @@ const ImageCard = ({ image }) => {
     }
 
     return (
-        <Skeleton w={"100%"} isLoaded={isLoaded}>
+        <Skeleton w={"100%"} isLoaded={isLoaded} borderRadius={"xl"}>
             <Image onLoad={finishLoad} key={image.url} w="100%" d="inline-block" src={image.url} mb={"8px"} borderRadius={"xl"} alt="Alt" />
         </Skeleton>
     )
