@@ -15,7 +15,7 @@ const Layout = (props) => {
             </Head>
             <div>  
                 <DashContent>
-                    <Flex as="flex" flexDirection={"column"} justifyContent={"space-between"} minH={"calc(100vh - 80px)"} h={"auto"}>
+                    <Flex flexDirection={"column"} justifyContent={"space-between"} minH={"calc(100vh - 80px)"} h={"auto"}>
                         {props.children}
                         <Footer />
                     </Flex>

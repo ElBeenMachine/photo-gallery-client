@@ -70,7 +70,7 @@ export default function DashAlbums({ albums }) {
                         </WrapItem>
                     ))
                 ) : (
-                    <WrapItem as={"flex"} minH={300} justifyContent={"center"} alignItems={"center"}>
+                    <WrapItem as={"div"} minH={300} justifyContent={"center"} alignItems={"center"}>
                         <Text>No Albums Exist</Text>
                     </WrapItem>
                 )}
