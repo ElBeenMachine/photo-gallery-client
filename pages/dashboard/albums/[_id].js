@@ -1,7 +1,7 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { hasToken } from "@/utils/checkUser";
 
-import { Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack } from "@chakra-ui/react";
+import { Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack, Skeleton } from "@chakra-ui/react";
 import Album from "@/models/Album";
 import User from "@/models/User";
 import DBImage from "@/models/Image";
@@ -24,6 +24,7 @@ export default function DashAlbums({ album }) {
     const router = useRouter();
     const { data: session } = useSession();
     const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure();
+    const { isOpen: isOpenUpload, onOpen: onOpenUpload, onClose: onCloseUpload } = useDisclosure();
 
     async function deleteAlbum(e) {
         e.preventDefault();
@@ -56,7 +57,7 @@ export default function DashAlbums({ album }) {
                             <HamburgerIcon boxSize={25} />
                         </MenuButton>
                         <MenuList>
-                            <MenuItem>Upload Images</MenuItem>
+                            <MenuItem onClick={onOpenUpload}>Upload Images</MenuItem>
                             <MenuItem onClick={onOpenConfirm}>Delete Album</MenuItem>
                         </MenuList>
                     </Menu>
@@ -68,9 +69,11 @@ export default function DashAlbums({ album }) {
                 <Text>{ album.description }</Text>
             </Stack>
             { album.images.length > 0 ? (
-                <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3], columnGap: "8px" }}>
+                <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3, 4], columnGap: "8px" }}>
                     {album.images.map((image) => (
-                        <Image key={image.url} w="100%" d="inline-block" src={image.url} mb={"8px"} borderRadius={"xl"} alt="Alt" />
+                        <Skeleton w={"100%"}>
+                            <Image key={image.url} w="100%" d="inline-block" src={image.url} mb={"8px"} borderRadius={"xl"} alt="Alt" />
+                        </Skeleton>
                     ))}
                 </Box>
             ) : (
@@ -94,6 +97,26 @@ export default function DashAlbums({ album }) {
                             Yes
                         </Button>
                         <Button onClick={onCloseConfirm}>Cancel</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            
+            {/* File Upload Form */}
+            <Modal isOpen={isOpenUpload} onClose={onCloseUpload}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Are You Sure?</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <Text>Deleting this album will also delete all images associated with it. This action cannot be undone.</Text>
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button colorScheme='green' mr={3} onClick={deleteAlbum}>
+                            Upload
+                        </Button>
+                        <Button onClick={onCloseUpload}>Cancel</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

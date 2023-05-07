@@ -8,6 +8,7 @@ import HomeCard from "@/Components/Dashboard/Home/Card";
 import User from "@/models/User";
 import Album from "@/models/Album";
 import Image from "@/models/Image";
+import dbConnect from "@/utils/dcConnect";
 
 function humanFileSize(bytes, si) {
     var thresh = si ? 1000 : 1024;
@@ -57,6 +58,8 @@ export async function getServerSideProps(context) {
             }
         }
     }
+
+    dbConnect();
 
     const users = await User.find().select({ password: 0 });
     const userCount = users.length;
