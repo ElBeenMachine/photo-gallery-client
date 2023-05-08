@@ -1,7 +1,7 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { hasToken } from "@/utils/checkUser";
 
-import { Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack, Skeleton, Input, FormControl, Flex, Spinner } from "@chakra-ui/react";
+import { Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack, Skeleton, Input, FormControl, Flex, Spinner, Progress } from "@chakra-ui/react";
 import Album from "@/models/Album";
 import User from "@/models/User";
 import DBImage from "@/models/Image";
@@ -14,26 +14,34 @@ import { useRouter } from "next/router";
 import AdminBar from "@/Components/Dashboard/AdminBar";
 import { HamburgerIcon } from "@chakra-ui/icons";
 
-import { Image } from "@chakra-ui/react";
-
 import handleError from "@/utils/fetchHandler";
 
 import { toast } from "react-toastify";
 import ImageCard from "@/Components/Dashboard/Albums/ImageCard";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function DashAlbums({ album }) {
     const router = useRouter();
     const { data: session } = useSession();
-    const [isUploading, setIsUploading] = useState(false);
+    let [isUploading, setIsUploading] = useState(false);
+    let [uploadProgress, setUploadProgress] = useState(0);
+    let [uploadCount, setUploadCount] = useState(0);
+    let [fileCount, setFileCount] = useState(0);
     const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure();
     const { isOpen: isOpenUpload, onOpen: onOpenUpload, onClose: onCloseUpload } = useDisclosure();
 
     function uploadImages(e) {
+        let _fileCount = 0;
+        let _uploadCount = 0;
+        let _uploadProgress = 0;
+
         e.preventDefault();
         setIsUploading(true);
         const files = e.currentTarget.files.files;
+
+        _fileCount = files.length;
+        setFileCount(_fileCount);
 
         let i = 0;
         for(let file of files) {
@@ -47,13 +55,24 @@ export default function DashAlbums({ album }) {
                 },
                 body: formData
             }).then(handleError).then(async data => {
-                console.log(data.message); 
+                _uploadCount ++;
+                setUploadCount(_uploadCount);
+                
+                _uploadProgress = Math.round((_uploadCount / _fileCount) * 100);
+                setUploadProgress(_uploadProgress);
+
                 i++;
                 if(i == files.length) {
-                    setIsUploading(false);
                     toast.success(`${files.length} file(s) have been successfully uploaded. They are now being processed and will be available shortly.`)
                     onCloseUpload();
-                    return router.push(router.asPath);
+                    setIsUploading(false);
+                    setUploadCount(0);
+                    setFileCount(0);
+                    setUploadProgress(0);
+
+                    setTimeout(() => {
+                        return router.push(router.asPath);
+                    }, 1000);
                 }
             }).catch(err => {
                 toast.error("Error: " + err.message);
@@ -148,7 +167,6 @@ export default function DashAlbums({ album }) {
                     { !isUploading ? (
                         <ModalBody>
                             <Text pb={5}>Select the files that you would like to upload to the album.</Text>
-
                             <Stack as={"form"} onSubmit={uploadImages}>
                                 <FormControl>
                                     <Input name="files" accept="image/jpeg" multiple type="file" required />
@@ -163,7 +181,9 @@ export default function DashAlbums({ album }) {
                         </ModalBody>
                     ) : (
                         <ModalBody>
-                            <Text pb={5}>Uploading images, please do not close this window.</Text>
+                            <Text pb={5}>Uploading {fileCount} image(s), please do not close this tab.</Text>
+                            <Progress isAnimated value={uploadProgress} colorScheme="green"></Progress>
+                            <Text pt={5}>Uploading image {uploadCount + 1} of {fileCount}</Text>
                             
                             <Flex justifyContent={"center"} alignItems={"center"} p={20}>
                                 <Spinner size={"lg"} />
