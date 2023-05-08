@@ -9,7 +9,7 @@ handler.use(isAdminMiddleware).post(async (req, res) => {
 
     const user = await User.findOne({ _id }).select();
     if(!user) return res.status(404).json({ message: "User Not Found" });
-    if(user.email == "ollie@beenhamow.co.uk") return res.status(401).json({ message: "You are not allowed to make changes to this user." });
+    if(user.email == "ollie@beenhamow.co.uk") return res.status(403).json({ message: "You are not allowed to make changes to this user." });
 
     await User.findOneAndUpdate({ _id }, { email: req.body.email, fname: req.body.fname, lname: req.body.lname, username: req.body.username, role: req.body.role });
 
