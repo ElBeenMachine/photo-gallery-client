@@ -99,23 +99,25 @@ export default function DashAlbums({ album }) {
                     </Menu>
                 </AdminBar>
             ) : (null) }
-
-            <Stack direction={"column"} px={10}>
-                <Heading>{album.name}</Heading>
-                <Text>{ album.description }</Text>
-                <Text fontSize={"sm"} opacity={0.8} ><em>Click an image to download it</em></Text>
+            <Stack flexGrow={1} py={10}>
+                <Stack direction={"column"} px={10} >
+                    <Heading>{album.name}</Heading>
+                    <Text>{ album.description }</Text>
+                    <Text fontSize={"sm"} opacity={0.8} ><em>Click an image to download it</em></Text>
+                </Stack>
+                { album.images.length > 0 ? (
+                    <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3, 4], columnGap: "8px" }}>
+                        {album.images.map((image) => (
+                            <ImageCard image={image} />
+                        ))}
+                    </Box>
+                ) : (
+                    <WrapItem as={"div"} minH={300} justifyContent={"center"} alignItems={"center"}>
+                        <Text>No Images Uploaded Yet</Text>
+                    </WrapItem>
+                )}
             </Stack>
-            { album.images.length > 0 ? (
-                <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3, 4], columnGap: "8px" }}>
-                    {album.images.map((image) => (
-                        <ImageCard image={image} />
-                    ))}
-                </Box>
-            ) : (
-                <WrapItem as={"div"} minH={300} justifyContent={"center"} alignItems={"center"}>
-                    <Text>No Images Uploaded Yet</Text>
-                </WrapItem>
-            )}
+            
 
             {/* Confirm Deletion Modal */}
             <Modal isOpen={isOpenConfirm} onClose={onCloseConfirm}>
