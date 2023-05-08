@@ -169,7 +169,7 @@ export default function DashAlbums({ album }) {
                             <Text pb={5}>Select the files that you would like to upload to the album.</Text>
                             <Stack as={"form"} onSubmit={uploadImages}>
                                 <FormControl>
-                                    <Input name="files" accept="image/jpeg" multiple type="file" required />
+                                    <Input name="files" accept="image/*" multiple type="file" required />
                                 </FormControl>
                                 <ModalFooter>
                                     <Button colorScheme='green' mr={3} type="submit">
