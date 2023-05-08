@@ -19,7 +19,7 @@ import handleError from "@/utils/fetchHandler";
 import { toast } from "react-toastify";
 import ImageCard from "@/Components/Dashboard/Albums/ImageCard";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function DashAlbums({ album }) {
     const router = useRouter();
@@ -43,40 +43,61 @@ export default function DashAlbums({ album }) {
         _fileCount = files.length;
         setFileCount(_fileCount);
 
+        // Task Executor
+        const addTask = (() => {
+            let pending = Promise.resolve();
+        
+            const run = async (url, options) => {
+                try {
+                    await pending;
+                } finally {
+                    return fetch(url, options).then(handleError).then(async data => {
+                        _uploadCount ++;
+                        setUploadCount(_uploadCount);
+                        
+                        _uploadProgress = Math.round((_uploadCount / _fileCount) * 100);
+                        setUploadProgress(_uploadProgress);
+        
+                        i++;
+                        if(i == files.length) {
+                            toast.success(`${files.length} file(s) have been successfully uploaded. They are now being processed and will be available shortly.`)
+                            onCloseUpload();
+                            setIsUploading(false);
+                            setUploadCount(0);
+                            setFileCount(0);
+                            setUploadProgress(0);
+        
+                            setTimeout(() => {
+                                return router.push(router.asPath);
+                            }, 2000);
+                        }
+                    }).catch(err => {
+                        toast.error("Error: " + err.message);
+                        return onCloseUpload();
+                    });
+                }
+            }
+
+            // update pending promise so that next task could await for it
+            return (url, options) => (pending = run(url, options))
+        })();
+
         let i = 0;
         for(let file of files) {
             const formData = new FormData();
             formData.append("files", file);
             formData.append("albumId", album._id);
-            fetch(`${process.env.API_URL}/images/upload`, {
+
+            const uploadOps = {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${session.accessToken}`
                 },
                 body: formData
-            }).then(handleError).then(async data => {
-                _uploadCount ++;
-                setUploadCount(_uploadCount);
-                
-                _uploadProgress = Math.round((_uploadCount / _fileCount) * 100);
-                setUploadProgress(_uploadProgress);
+            }
 
-                i++;
-                if(i == files.length) {
-                    toast.success(`${files.length} file(s) have been successfully uploaded. They are now being processed and will be available shortly.`)
-                    onCloseUpload();
-                    setIsUploading(false);
-                    setUploadCount(0);
-                    setFileCount(0);
-                    setUploadProgress(0);
-
-                    setTimeout(() => {
-                        return router.push(router.asPath);
-                    }, 1000);
-                }
-            }).catch(err => {
-                toast.error("Error: " + err.message);
-                return onCloseUpload();
+            addTask(`${process.env.API_URL}/images/upload`, uploadOps).then((result) => {
+                console.log(result);
             });
         }
     }
