@@ -4,6 +4,7 @@ import AlbumCard from "@/Components/Dashboard/Albums/AlbumCard";
 import { Wrap, WrapItem, Button, Spinner, Flex, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, Textarea, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import Album from "@/models/Album";
 import User from "@/models/User";
+import Image from "@/models/Image";
 import dbConnect from "@/utils/dcConnect";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -130,16 +131,26 @@ export async function getServerSideProps(context) {
     }
 
     dbConnect();
-    let albums = await Album.find()
-    let data = albums.map(album => {
-        return { _id: album._id, name: album.name, description: album.description, cover: album.cover, createdBy: album.createdBy }
+    let albums = await Album.find().sort({ name: "asc" });
+    let data = albums.map(async album => {
+        let cover;
+        if(album.cover == null) {
+            const image = await Image.findOne({ albumId: album._id.toString() });
+            if(!image) {
+                cover = "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80";
+            } else {
+                cover = image.thumbs["512"].url;
+            }
+        }
+        return { _id: album._id, name: album.name, description: album.description, cover: album.cover || cover, createdBy: album.createdBy, createdAt: album.createdAt }
     });
 
-    for(let album of data) {
-        await User.findOne({ _id: album.createdBy }).select({ password: 0, role: 0, email: 0, createdAt: 0, username: 0, __v: 0 }).then((user) => {
-            album.author = user;
-        });
+    let results = await Promise.all(data);
+
+    for(let album of results) {
+        const user = await User.findOne({ _id: album.createdBy }).select({ password: 0, role: 0, email: 0, createdAt: 0, username: 0, __v: 0 });
+        album.author = user;
     }
 
-    return { props: { albums: JSON.parse(JSON.stringify(data)) } }
+    return { props: { albums: JSON.parse(JSON.stringify(results)) } }
 }

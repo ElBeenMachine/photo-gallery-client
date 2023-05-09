@@ -73,6 +73,10 @@ export default function DashAlbums({ album }) {
                         }
                     }).catch(err => {
                         toast.error("Error: " + err.message);
+                        setIsUploading(false);
+                        setUploadCount(0);
+                        setFileCount(0);
+                        setUploadProgress(0);
                         return onCloseUpload();
                     });
                 }
@@ -85,7 +89,7 @@ export default function DashAlbums({ album }) {
         let i = 0;
         for(let file of files) {
             const formData = new FormData();
-            formData.append("files", file);
+            formData.append("file", file);
             formData.append("albumId", album._id);
 
             const uploadOps = {
@@ -258,7 +262,7 @@ export async function getServerSideProps(context) {
         for(let image of images) {
             data.images.push({
                 _id: image._id,
-                url: image.url,
+                url: image.thumbs["512"].url,
                 fileSize: image.fileSize,
                 uploadedAt: image.uploadedAt,
                 uploadedBy: image.uploadedBy || null
