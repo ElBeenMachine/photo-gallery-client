@@ -69,9 +69,12 @@ export async function getServerSideProps(context) {
 
     let storageUsed = 0;
 
-    const images = await Image.find().select({ fileSize: 1 });
+    const images = await Image.find().select({ fileSize: 1, thumbs: 1 });
     for(let image of images) {
         storageUsed += image.fileSize;
+        for(let thumb of Object.keys(image.thumbs)) {
+            storageUsed += image.thumbs[thumb].fileSize
+        }
     }
     const imageCount = images.length;
 
