@@ -1,7 +1,7 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { hasToken } from "@/utils/checkUser";
 
-import { Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack, Skeleton, Input, FormControl, Flex, Spinner, Progress } from "@chakra-ui/react";
+import { useColorModeValue, Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack, Skeleton, Input, FormControl, Flex, Spinner, Progress, Image } from "@chakra-ui/react";
 import Album from "@/models/Album";
 import User from "@/models/User";
 import DBImage from "@/models/Image";
@@ -12,12 +12,14 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 import AdminBar from "@/Components/Dashboard/AdminBar";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import { CloseIcon, DownloadIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 import handleError from "@/utils/fetchHandler";
 
 import { toast } from "react-toastify";
 import ImageCard from "@/Components/Dashboard/Albums/ImageCard";
+
+
 
 import { useState } from "react";
 
@@ -30,6 +32,9 @@ export default function DashAlbums({ album }) {
     let [fileCount, setFileCount] = useState(0);
     const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure();
     const { isOpen: isOpenUpload, onOpen: onOpenUpload, onClose: onCloseUpload } = useDisclosure();
+    const [lightboxDisplay, setLightboxDisplay] = useState(false);
+    const [lightboxImage, setLightboxImage] = useState("");
+    const [lightboxLoaded, setLightboxLoaded] = useState(false);
 
     function uploadImages(e) {
         let _fileCount = 0;
@@ -128,6 +133,23 @@ export default function DashAlbums({ album }) {
         });
     }
 
+    const showImage = (image) => {
+        //set imageToShow to be the one that's been clicked on    
+        setLightboxImage(image);
+
+        //set lightbox visibility to true
+        setLightboxDisplay(true);
+    };
+
+    const hideLightBox = () => {
+        setLightboxDisplay(false);
+        setLightboxLoaded(false);
+    }
+
+    const downloadLightboxImage = () => {
+        window.open(lightboxImage, '_self');
+    }
+
     return (
         <Layout pageTitle = { `Photo Gallery | ${album.name}` }>
             { session.user.role == "admin" ? (
@@ -152,7 +174,7 @@ export default function DashAlbums({ album }) {
                 { album.images.length > 0 ? (
                     <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3, 4], columnGap: "8px" }}>
                         {album.images.map((image) => (
-                            <ImageCard image={image} />
+                            <ImageCard onclick={() => showImage(image.original)} image={image} />
                         ))}
                     </Box>
                 ) : (
@@ -218,8 +240,35 @@ export default function DashAlbums({ album }) {
                     
                 </ModalContent>
             </Modal>
+
+            {/* Image Lightbox */}
+            { lightboxDisplay ?
+                <Flex id="lightbox" w={"100%"} h={"100%"} direction={"column"} justifyContent={"space-between"} alignItems={"center"}>
+                    <LightBoxRow alignment={"end"}>
+                        <Button color={"black"} bg={"none"} _hover={{ bg: "none" }} onClick={hideLightBox}>
+                            <CloseIcon boxSize={5} />
+                        </Button>
+                    </LightBoxRow>
+                    <Skeleton m={10} isLoaded={lightboxLoaded} overflow={"hidden"} flexGrow={1}>
+                        <Image h={"100%"} onLoad={() => setLightboxLoaded(true)} src={lightboxImage} objectFit={"contain"} />
+                    </Skeleton>
+                    <LightBoxRow alignment="center">
+                        <Button color={"black"} bg={"none"} _hover={{ bg: "none" }} onClick={downloadLightboxImage}>
+                            <DownloadIcon boxSize={5} mr={5} /> Download Image
+                        </Button>
+                    </LightBoxRow>
+                </Flex>
+            : '' }
         </Layout>
     );
+}
+
+const LightBoxRow = ({ children, alignment }) => {
+    return (
+        <Stack direction={"row"} w={"100%"} justifyContent={alignment} alignItems={"center"} p={5}  bg={"rgba(255, 255, 255, 0.8)"}>
+            {children}
+        </Stack>
+    )
 }
 
 // Require authentication
@@ -263,6 +312,7 @@ export async function getServerSideProps(context) {
             data.images.push({
                 _id: image._id,
                 url: image.thumbs["512"].url,
+                original: image.url,
                 fileSize: image.fileSize,
                 uploadedAt: image.uploadedAt,
                 uploadedBy: image.uploadedBy || null
