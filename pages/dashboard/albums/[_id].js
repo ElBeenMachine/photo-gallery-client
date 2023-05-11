@@ -231,7 +231,7 @@ export default function DashAlbums({ album }) {
                     ) : (
                         <ModalBody>
                             <Text pb={5}>Uploading {fileCount} image(s), please do not close this tab.</Text>
-                            <Progress isAnimated value={uploadProgress} bg={'#ff8563'}></Progress>
+                            <Progress value={uploadProgress} colorScheme='orange'></Progress>
                             <Text pt={5}>Uploading image {uploadCount + 1} of {fileCount}</Text>
                             
                             <Flex justifyContent={"center"} alignItems={"center"} p={20}>
