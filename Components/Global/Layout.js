@@ -35,7 +35,7 @@ const Layout = (props) => {
                 <meta name="twitter:description" content={pageDescription} />
                 <meta name="twitter:image" content={pageImage} />
 
-                <meta name="theme-color" content="#25be53"></meta>
+                <meta name="theme-color" content="#ff8563"></meta>
 
                 <meta charSet="UFT-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
