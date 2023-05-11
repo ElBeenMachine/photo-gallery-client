@@ -19,7 +19,7 @@ export default function App({ Component, pageProps: { session, ...pageProps }}) 
                 </Auth>
             ) : (
                 <ChakraProvider>
-                    <NextNProgress />
+                    <NextNProgress color='#ff8563' />
                     <Component {...pageProps} />
                     <ToastContainer />
                 </ChakraProvider>
