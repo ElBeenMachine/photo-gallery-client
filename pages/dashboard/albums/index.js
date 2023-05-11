@@ -103,7 +103,7 @@ export default function DashAlbums({ albums }) {
                             </ModalBody>
             
                             <ModalFooter>
-                                <Button type={"submit"} colorScheme='green' mr={3}>
+                                <Button type={"submit"} bg={'#ff8563'} color={'white'} _hover={{ bg: "#cc6a4f" }} mr={3}>
                                     Create Album
                                 </Button>
                                 <Button onClick={onCloseNew}>Cancel</Button>

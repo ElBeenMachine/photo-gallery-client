@@ -36,7 +36,7 @@ export default function SimpleCard() {
             <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
                 <Stack align={'center'}>
                     <Heading fontSize={'4xl'}>Sign in to your account</Heading>
-                    <Text fontSize={'lg'} color={'gray.600'}>to see all of our <Text as={"span"} color={'green.400'}>pictures</Text> ✌️</Text>
+                    <Text fontSize={'lg'} color={'gray.600'}>to see all of our <Text as={"span"} color={'#ff8563'}>pictures</Text> ✌️</Text>
                 </Stack>
                 <Box rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
                     <Stack as={"form"} onSubmit={handleLogin} spacing={4}>
@@ -50,9 +50,9 @@ export default function SimpleCard() {
                         </FormControl>
                         <Stack spacing={10}>
                             <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'space-between'}>
-                                <Link href={""} color={'green.400'}>Forgot password?</Link>
+                                <Link href={""} color={'#ff8563'}>Forgot password?</Link>
                             </Stack>
-                            <Button type='submit' bg={'green.400'} color={'white'} _hover={{ bg: 'green.500' }}>
+                            <Button type='submit' bg={'#ff8563'} color={'white'} _hover={{ bg: '#cc6a4f' }}>
                                 Sign in
                             </Button>
                         </Stack>

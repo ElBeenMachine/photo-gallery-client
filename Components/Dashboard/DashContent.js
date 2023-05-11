@@ -1,4 +1,4 @@
-import { IconButton, Box, CloseButton, Flex, HStack, Icon, useColorModeValue, Drawer, DrawerContent, Text, useDisclosure } from '@chakra-ui/react';
+import { IconButton, Box, CloseButton, Flex, HStack, Icon, useColorModeValue, Drawer, DrawerContent, Text, useDisclosure, background } from '@chakra-ui/react';
 import { Link } from "@chakra-ui/next-js";
 import { FiMenu } from 'react-icons/fi';
 import UserDropdown from '../Global/Navigation/UserDropdown';
@@ -53,7 +53,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
 const NavItem = ({ icon, children, href, ...rest }) => {
     return (
         <Link href={ href || "#"} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
-            <Flex align="center" p="4" mx="4" borderRadius="lg" role="group" cursor="pointer" _hover={{ bg: 'green.400', color: 'white' }} {...rest}>
+            <Flex align="center" p="4" mx="4" borderRadius="lg" role="group" cursor="pointer" style={{ transition: "background-color 0.2s ease-in-out color 0.2s ease-in-out" }} _hover={{ bg: '#ff8563', color: 'white' }} {...rest}>
                 {icon && (
                     <Icon mr="4" fontSize="16" _groupHover={{ color: 'white' }} as={icon} />
                 )}

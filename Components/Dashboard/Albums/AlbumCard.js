@@ -22,7 +22,7 @@ export default function AlbumCard({ album }) {
                 </Skeleton>
             </Box>
             <Stack>
-                <Text color={'green.500'} minW={"300px"} textTransform={'uppercase'} fontWeight={800} fontSize={'sm'} letterSpacing={1.1}>
+                <Text color={'#ff8563'} minW={"300px"} textTransform={'uppercase'} fontWeight={800} fontSize={'sm'} letterSpacing={1.1}>
                     Album
                 </Text>
                 <Heading color={useColorModeValue('gray.700', 'white')} fontSize={'2xl'} fontFamily={'body'}>
