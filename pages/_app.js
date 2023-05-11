@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import 'react-toastify/dist/ReactToastify.css';
+import NextNProgress from "nextjs-progressbar";
 
 export default function App({ Component, pageProps: { session, ...pageProps }}) {
     return (
@@ -11,12 +12,14 @@ export default function App({ Component, pageProps: { session, ...pageProps }}) 
             { Component.auth ? (
                 <Auth>
                     <ChakraProvider>
+                        <NextNProgress color='#ff8563' />
                         <Component {...pageProps} />
                         <ToastContainer />
                     </ChakraProvider>
                 </Auth>
             ) : (
                 <ChakraProvider>
+                    <NextNProgress />
                     <Component {...pageProps} />
                     <ToastContainer />
                 </ChakraProvider>
