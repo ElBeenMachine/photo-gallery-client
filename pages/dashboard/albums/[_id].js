@@ -221,7 +221,7 @@ export default function DashAlbums({ album }) {
                                     <Input name="files" accept="image/*" multiple type="file" required />
                                 </FormControl>
                                 <ModalFooter>
-                                    <Button colorScheme='green' mr={3} type="submit">
+                                    <Button bg={'#ff8563'} color={'white'} mr={3} type="submit">
                                         Upload
                                     </Button>
                                     <Button onClick={onCloseUpload}>Cancel</Button>
@@ -231,7 +231,7 @@ export default function DashAlbums({ album }) {
                     ) : (
                         <ModalBody>
                             <Text pb={5}>Uploading {fileCount} image(s), please do not close this tab.</Text>
-                            <Progress isAnimated value={uploadProgress} colorScheme="green"></Progress>
+                            <Progress isAnimated value={uploadProgress} bg={'#ff8563'}></Progress>
                             <Text pt={5}>Uploading image {uploadCount + 1} of {fileCount}</Text>
                             
                             <Flex justifyContent={"center"} alignItems={"center"} p={20}>

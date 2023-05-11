@@ -191,7 +191,7 @@ export default function DashUsers({ users }) {
                             </ModalBody>
             
                             <ModalFooter>
-                                <Button type={"submit"} colorScheme='green' mr={3}>
+                                <Button type={"submit"} color={'white'} bg={'#ff8563'} _hover={{ bg: "#cc6a4f" }} mr={3}>
                                     Create User
                                 </Button>
                                 <Button onClick={onCloseNew}>Cancel</Button>
