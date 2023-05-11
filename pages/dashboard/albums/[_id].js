@@ -34,6 +34,7 @@ export default function DashAlbums({ album }) {
     const { isOpen: isOpenUpload, onOpen: onOpenUpload, onClose: onCloseUpload } = useDisclosure();
     const [lightboxDisplay, setLightboxDisplay] = useState(false);
     const [lightboxImage, setLightboxImage] = useState("");
+    const [downloadImage, setDownloadImage] = useState("");
     const [lightboxLoaded, setLightboxLoaded] = useState(false);
 
     function uploadImages(e) {
@@ -135,7 +136,8 @@ export default function DashAlbums({ album }) {
 
     const showImage = (image) => {
         //set imageToShow to be the one that's been clicked on    
-        setLightboxImage(image);
+        setLightboxImage(image.thumbs["2048"].url);
+        setDownloadImage(image.original);
 
         //set lightbox visibility to true
         setLightboxDisplay(true);
@@ -147,7 +149,7 @@ export default function DashAlbums({ album }) {
     }
 
     const downloadLightboxImage = () => {
-        window.open(lightboxImage, '_self');
+        window.open(downloadImage, '_self');
     }
 
     return (
@@ -174,7 +176,7 @@ export default function DashAlbums({ album }) {
                 { album.images.length > 0 ? (
                     <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3, 4], columnGap: "8px" }}>
                         {album.images.map((image) => (
-                            <ImageCard onclick={() => showImage(image.original)} image={image} />
+                            <ImageCard onclick={() => showImage(image)} image={image} />
                         ))}
                     </Box>
                 ) : (
@@ -245,16 +247,16 @@ export default function DashAlbums({ album }) {
             { lightboxDisplay ?
                 <Flex id="lightbox" w={"100%"} h={"100%"} direction={"column"} justifyContent={"space-between"} alignItems={"center"}>
                     <LightBoxRow alignment={"end"}>
-                        <Button color={"black"} bg={"none"} _hover={{ bg: "none" }} onClick={hideLightBox}>
-                            <CloseIcon boxSize={5} />
+                        <Button color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={hideLightBox}>
+                            <CloseIcon boxSize={3} />
                         </Button>
                     </LightBoxRow>
-                    <Skeleton m={10} isLoaded={lightboxLoaded} overflow={"hidden"} flexGrow={1}>
+                    <Skeleton m={5} isLoaded={lightboxLoaded} overflow={"hidden"} flexGrow={1}>
                         <Image h={"100%"} onLoad={() => setLightboxLoaded(true)} src={lightboxImage} objectFit={"contain"} />
                     </Skeleton>
                     <LightBoxRow alignment="center">
-                        <Button color={"black"} bg={"none"} _hover={{ bg: "none" }} onClick={downloadLightboxImage}>
-                            <DownloadIcon boxSize={5} mr={5} /> Download Image
+                        <Button color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={downloadLightboxImage}>
+                            <DownloadIcon boxSize={4} mr={4} /> Download Image
                         </Button>
                     </LightBoxRow>
                 </Flex>
@@ -265,7 +267,7 @@ export default function DashAlbums({ album }) {
 
 const LightBoxRow = ({ children, alignment }) => {
     return (
-        <Stack direction={"row"} w={"100%"} justifyContent={alignment} alignItems={"center"} p={5}  bg={"rgba(255, 255, 255, 0.8)"}>
+        <Stack direction={"row"} w={"100%"} justifyContent={alignment} alignItems={"center"} p={2} bg={useColorModeValue("gray.700", "gray.900")}>
             {children}
         </Stack>
     )
@@ -313,6 +315,7 @@ export async function getServerSideProps(context) {
                 _id: image._id,
                 url: image.thumbs["512"].url,
                 original: image.url,
+                thumbs: image.thumbs,
                 fileSize: image.fileSize,
                 uploadedAt: image.uploadedAt,
                 uploadedBy: image.uploadedBy || null
