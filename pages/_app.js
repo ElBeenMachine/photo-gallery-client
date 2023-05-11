@@ -12,14 +12,14 @@ export default function App({ Component, pageProps: { session, ...pageProps }}) 
             { Component.auth ? (
                 <Auth>
                     <ChakraProvider>
-                        <NextNProgress color='#ff8563' />
+                        <NextNProgress options={{ showSpinner: false }} color='#ff8563' />
                         <Component {...pageProps} />
                         <ToastContainer />
                     </ChakraProvider>
                 </Auth>
             ) : (
                 <ChakraProvider>
-                    <NextNProgress color='#ff8563' />
+                    <NextNProgress options={{ showSpinner: false }} color='#ff8563' />
                     <Component {...pageProps} />
                     <ToastContainer />
                 </ChakraProvider>
