@@ -18,9 +18,9 @@ const Layout = (props) => {
                 <meta name="description" content={pageDescription} />
 
                 {/* <!-- Google / Search Engine Tags --> */}
-                <meta itemprop="name" content={props.pageTitle} />
-                <meta itemprop="description" content={pageDescription} />
-                <meta itemprop="image" content={pageImage} />
+                <meta itemProp="name" content={props.pageTitle} />
+                <meta itemProp="description" content={pageDescription} />
+                <meta itemProp="image" content={pageImage} />
 
                 {/* <!-- Facebook Meta Tags --> */}
                 <meta property="og:url" content={pageURL} />
