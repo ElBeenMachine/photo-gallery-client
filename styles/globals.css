@@ -6,8 +6,8 @@
     'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background-start-rgb: #ffffff;
+  --background-end-rgb: #ffffff;
 
   --primary-glow: conic-gradient(
     from 180deg at 50% 50%,
@@ -101,11 +101,11 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
-}
+} */
 
 #lightbox {
     z-index: 1;
