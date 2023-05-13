@@ -49,7 +49,7 @@ export default function DashAlbums({ albums }) {
     }
 
     return (
-        <Layout pageTitle = "Photo Gallery | Manage Albums">
+        <Layout pageTitle = "Photo Gallery | Albums">
             { session.user.role == "admin" ? (
                 <AdminBar>
                     <Menu>
