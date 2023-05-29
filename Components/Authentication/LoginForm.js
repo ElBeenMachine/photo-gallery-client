@@ -42,16 +42,13 @@ export default function SimpleCard() {
                     <Stack as={"form"} onSubmit={handleLogin} spacing={4}>
                         <FormControl id="email">
                             <FormLabel>Email address</FormLabel>
-                            <Input type="email" />
+                            <Input type="email" required />
                         </FormControl>
                         <FormControl id="password">
                             <FormLabel>Password</FormLabel>
-                            <Input type="password" />
+                            <Input type="password" required />
                         </FormControl>
                         <Stack spacing={10}>
-                            <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'space-between'}>
-                                <Link href={""} color={'#ff8563'}>Forgot password?</Link>
-                            </Stack>
                             <Button type='submit' bg={'#ff8563'} color={'white'} _hover={{ bg: '#cc6a4f' }}>
                                 Sign in
                             </Button>
