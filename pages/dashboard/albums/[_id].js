@@ -2,6 +2,8 @@ import Layout from "@/Components/Dashboard/DashLayout";
 import { hasToken } from "@/utils/checkUser";
 
 import { useColorModeValue, Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack, Skeleton, Input, FormControl, Flex, Spinner, Progress, Image } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/next-js";
+
 import Album from "@/models/Album";
 import User from "@/models/User";
 import DBImage from "@/models/Image";
@@ -14,6 +16,7 @@ import { useRouter } from "next/router";
 import AdminBar from "@/Components/Dashboard/AdminBar";
 import { CloseIcon, DownloadIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai"
+import { BsDownload } from "react-icons/bs";
 
 import handleError from "@/utils/fetchHandler";
 
@@ -165,10 +168,6 @@ export default function DashAlbums({ album }) {
         setLightboxLoaded(false);
     }
 
-    const downloadLightboxImage = () => {
-        window.open(downloadImage, '_self');
-    }
-
     return (
         <Layout pageTitle = { `Photo Gallery | ${album.name}` }>
             { session.user.role == "admin" ? (
@@ -272,13 +271,13 @@ export default function DashAlbums({ album }) {
                     <Text mb={4}>{imageString}</Text>
                     <LightBoxRow alignment="center">
                         <Button w={"100%"} color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={previousImage}>
-                            <AiOutlineLeft />
+                            <AiOutlineLeft /> <Text ml={4} display={{ base: "none", md: "inline-block" }}>Previous Image</Text>
                         </Button>
-                        <Button w={"max-content"} color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={downloadLightboxImage}>
-                            <DownloadIcon boxSize={4} mr={4} /> Download Image
-                        </Button>
+                        <Link as={Button} download href={downloadImage} display={"flex"} justifyContent={"center"} alignItems={"center"} w={"max-content"} whiteSpace={"nowrap"} cursor={"pointer"} color={"white"} bg={"none"} _hover={{ bg: "none" }}>
+                            <BsDownload /> <Text ml={4} display={{ base: "none", md: "inline-block" }}>Download Image</Text>
+                        </Link>
                         <Button w={"100%"} color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={nextImage}>
-                            <AiOutlineRight />
+                        <Text mr={4} display={{ base: "none", md: "inline-block" }}>Next Image</Text> <AiOutlineRight />
                         </Button>
                     </LightBoxRow>
                 </Flex>
