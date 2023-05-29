@@ -78,7 +78,7 @@ export default function DashAlbums({ album }) {
                             }, 2000);
                         }
                     }).catch(err => {
-                        toast.error("Error: " + err.message);
+                        toast.error(err.message);
                         setIsUploading(false);
                         setUploadCount(0);
                         setFileCount(0);
@@ -129,7 +129,7 @@ export default function DashAlbums({ album }) {
             toast.success(data.message);
             return router.push("/dashboard/albums");
         }).catch(err => {
-            toast.error("Error: " + err.message);
+            toast.error(err.message);
             return onCloseNew();
         });
     }
