@@ -42,7 +42,7 @@ export default function DashAlbums({ albums }) {
             setLoadingNewAlbum(false);
             return onCloseNew();
         }).catch(err => {
-            toast.error("Error: " + err.message);
+            toast.error(err.message);
             setLoadingNewAlbum(false);
             return onCloseNew();
         });
