@@ -13,13 +13,12 @@ import { useRouter } from "next/router";
 
 import AdminBar from "@/Components/Dashboard/AdminBar";
 import { CloseIcon, DownloadIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai"
 
 import handleError from "@/utils/fetchHandler";
 
 import { toast } from "react-toastify";
 import ImageCard from "@/Components/Dashboard/Albums/ImageCard";
-
-
 
 import { useState } from "react";
 
@@ -36,6 +35,7 @@ export default function DashAlbums({ album }) {
     const [lightboxImage, setLightboxImage] = useState("");
     const [downloadImage, setDownloadImage] = useState("");
     const [lightboxLoaded, setLightboxLoaded] = useState(false);
+    const [imageString, setImageString] = useState(false);
 
     function uploadImages(e) {
         let _fileCount = 0;
@@ -135,13 +135,30 @@ export default function DashAlbums({ album }) {
     }
 
     const showImage = (image) => {
+        setLightboxLoaded(false);
+        setImageString(`${image.index + 1} / ${album.images.length}`)
+
         //set imageToShow to be the one that's been clicked on    
-        setLightboxImage(image.thumbs["2048"].url);
+        setLightboxImage(image);
         setDownloadImage(image.original);
 
         //set lightbox visibility to true
         setLightboxDisplay(true);
+
+
     };
+
+    const previousImage = () => {
+        let index = lightboxImage.index - 1;
+        if(index == -1) index = album.images.length - 1;
+        showImage(album.images[index]);
+    }
+
+    const nextImage = () => {
+        let index = lightboxImage.index + 1;
+        if(index == album.images.length) index = 0;
+        showImage(album.images[index]);
+    }
 
     const hideLightBox = () => {
         setLightboxDisplay(false);
@@ -186,7 +203,6 @@ export default function DashAlbums({ album }) {
                 )}
             </Stack>
             
-
             {/* Confirm Deletion Modal */}
             <Modal isOpen={isOpenConfirm} onClose={onCloseConfirm}>
                 <ModalOverlay />
@@ -205,7 +221,6 @@ export default function DashAlbums({ album }) {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-
             
             {/* File Upload Form */}
             <Modal isOpen={isOpenUpload} onClose={onCloseUpload}>
@@ -252,11 +267,18 @@ export default function DashAlbums({ album }) {
                         </Button>
                     </LightBoxRow>
                     <Skeleton m={5} isLoaded={lightboxLoaded} overflow={"hidden"} flexGrow={1}>
-                        <Image h={"100%"} onLoad={() => setLightboxLoaded(true)} src={lightboxImage} objectFit={"contain"} />
+                        <Image h={"100%"} onLoad={() => setLightboxLoaded(true)} src={lightboxImage.thumbs["2048"].url} objectFit={"contain"} />
                     </Skeleton>
+                    <Text mb={4}>{imageString}</Text>
                     <LightBoxRow alignment="center">
-                        <Button color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={downloadLightboxImage}>
+                        <Button w={"100%"} color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={previousImage}>
+                            <AiOutlineLeft />
+                        </Button>
+                        <Button w={"max-content"} color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={downloadLightboxImage}>
                             <DownloadIcon boxSize={4} mr={4} /> Download Image
+                        </Button>
+                        <Button w={"100%"} color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={nextImage}>
+                            <AiOutlineRight />
                         </Button>
                     </LightBoxRow>
                 </Flex>
@@ -310,8 +332,10 @@ export async function getServerSideProps(context) {
 
 
     await DBImage.find({ albumId: album._id.toString() }).then((images => {
+        let counter = 0;
         for(let image of images) {
             data.images.push({
+                index: counter,
                 _id: image._id,
                 url: image.thumbs["512"].url,
                 original: image.url,
@@ -320,6 +344,7 @@ export async function getServerSideProps(context) {
                 uploadedAt: image.uploadedAt,
                 uploadedBy: image.uploadedBy || null
             });
+            counter++;
         }
     }));
 
