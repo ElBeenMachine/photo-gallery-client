@@ -14,7 +14,11 @@ const handleError = async (response) => {
         } catch (error) {
             message = response.statusText;
         }
-        if(message == "" || message == undefined || message == null) message = "An unexpected error has occurred.";
+
+        if(message == "" || message == undefined || message == null) {
+            console.error(response);
+            message = "An unexpected error has occurred.";
+        }
         throw new Error(message);
     } else {
         return response.json();
