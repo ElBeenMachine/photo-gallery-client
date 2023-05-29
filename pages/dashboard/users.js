@@ -2,7 +2,7 @@ import Layout from "@/Components/Dashboard/DashLayout";
 import { isAdmin, hasToken } from "@/utils/checkUser";
 import UserCard from "@/Components/Dashboard/Users/UserCard";
 import { Menu, MenuButton, MenuList, MenuItem, Wrap, WrapItem, Button, Spinner, Flex, Select, Stack, FormControl, Input, FormLabel, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react";
-import { PlusSquareIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import User from "@/models/User";
 import dbConnect from "@/utils/dcConnect";
 import { useSession } from "next-auth/react";
@@ -30,7 +30,7 @@ export default function DashUsers({ users }) {
             setUserData(data.user);
             setLoadingUser(false);
         }).catch(err => {
-            toast.error("Error: " + err.message);
+            toast.error(err.message);
             return onClose();
         });
     }
@@ -51,7 +51,7 @@ export default function DashUsers({ users }) {
             setLoadingUser(false);
             return onClose();
         }).catch(err => {
-            toast.error("Error: " + err.message);
+            toast.error(err.message);
             setLoadingUser(false);
             return onClose();
         });
@@ -82,7 +82,7 @@ export default function DashUsers({ users }) {
             setLoadingNewUser(false);
             return onCloseNew();
         }).catch(err => {
-            toast.error("Error: " + err.message);
+            toast.error(err.message);
             setLoadingNewUser(false);
             return onCloseNew();
         });
@@ -105,7 +105,7 @@ export default function DashUsers({ users }) {
             setLoadingUser(false);
             return onClose();
         }).catch(err => {
-            toast.error("Error: " + err.message);
+            toast.error(err.message);
             setLoadingUser(false);
             return onClose();
         });
