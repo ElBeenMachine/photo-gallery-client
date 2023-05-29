@@ -15,7 +15,7 @@ export default function PasswordSuccess() {
                         Password Changed
                     </Heading>
                     <Text color={'gray.500'}>
-                        Your password has now been changed. Click the button below to be returned to your dashboard.
+                        Your password has now been changed. Click the button below to continue to your dashboard.
                     </Text>
                     <Button onClick={redirect} color={'white'} bg={"#ff8563"} rounded={"full"} px={6} _hover={{ bg: "#cc6a4f" }} mt={6}>My Dashboard</Button>
                 </Box>
