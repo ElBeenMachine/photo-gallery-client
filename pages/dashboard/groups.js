@@ -35,7 +35,7 @@ export default function DashGroups({ groups }) {
             colour: color.value
         }
         onCloseNew();
-        alert(`Group of name '${body.name} to be made with the colour ${body.colour}`);
+        alert(`Group of name '${body.name}' to be made with the colour ${body.colour}`);
     }
 
     return (
@@ -55,7 +55,7 @@ export default function DashGroups({ groups }) {
                 { groups.length > 1 ? (
                     groups.map(group => (
                         <WrapItem w={"100%"} maxW={{ base: "90%", md: "350px" }} key={group._id}>
-                            <UserCard handleFunction={handleEditButton} name={group.fname + " " + group.lname} role={group.role} avatar={group.avatar} _id={group._id}/>
+                            
                         </WrapItem>
                     ))
                 ) : (
