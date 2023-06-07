@@ -5,25 +5,25 @@ import { ToastContainer } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import 'react-toastify/dist/ReactToastify.css';
 import NextNProgress from "nextjs-progressbar";
+import NavigationLoader from '@/Components/Global/NavLoader';
 
 export default function App({ Component, pageProps: { session, ...pageProps }}) {
     return (
         <SessionProvider session = { session }>
+            <NavigationLoader />
+            <NextNProgress options={{ showSpinner: false }} color='#ff8563' />
             { Component.auth ? (
                 <Auth>
                     <ChakraProvider>
-                        <NextNProgress options={{ showSpinner: false }} color='#ff8563' />
                         <Component {...pageProps} />
-                        <ToastContainer />
                     </ChakraProvider>
                 </Auth>
             ) : (
                 <ChakraProvider>
-                    <NextNProgress options={{ showSpinner: false }} color='#ff8563' />
                     <Component {...pageProps} />
-                    <ToastContainer />
                 </ChakraProvider>
             )}
+            <ToastContainer />
         </SessionProvider>
     );
 }

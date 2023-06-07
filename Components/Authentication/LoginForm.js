@@ -1,15 +1,19 @@
-import { Flex, Box, FormControl, FormLabel, Input, Checkbox, Stack, Button, Heading, Text, useColorModeValue, } from '@chakra-ui/react';
-import { Link } from "@chakra-ui/next-js";
+import { Flex, Box, FormControl, FormLabel, Input, Stack, Button, Heading, Text, useColorModeValue, Spinner } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { signIn } from "next-auth/react";
 import { toast } from 'react-toastify';
+import { useState } from 'react';
   
 export default function SimpleCard() {
     const router = useRouter();
     const redirect = router.query.referer ? router.query.referer : "/";
+    const [loading, setLoading] = useState(false);
 
     async function handleLogin(e) {
         e.preventDefault();
+        if(loading == true) return;
+
+        loadButton();
 
         const creds = {
             email: e.target.email.value,
@@ -25,10 +29,25 @@ export default function SimpleCard() {
                 toast.success("Login Successful");
                 router.push(redirect);
             } else {
+                resetButton();
                 console.error(error);
                 toast.error(error);
             }
         });
+    }
+
+    function resetButton() {
+        const loginButton = document.getElementById("loginBtn");
+        loginButton.style.borderRadius = "5px";
+        loginButton.style.width = "100%";
+        setLoading(false);
+    }
+
+    function loadButton() {
+        const loginButton = document.getElementById("loginBtn");
+        setLoading(true);
+        loginButton.style.borderRadius = "50%";
+        loginButton.style.width = "50px";
     }
 
     return (
@@ -48,11 +67,15 @@ export default function SimpleCard() {
                             <FormLabel>Password</FormLabel>
                             <Input type="password" required />
                         </FormControl>
-                        <Stack spacing={10}>
-                            <Button type='submit' bg={'#ff8563'} color={'white'} _hover={{ bg: '#cc6a4f' }}>
-                                Sign in
+                        <Flex spacing={10} justify={'center'}>
+                            <Button type='submit' id='loginBtn' h={"50px"} borderRadius={"5px"} style={{ transition: "width 0.2s ease-in-out, border-radius 0.3s linear" }} bg={'#ff8563'} color={'white'} _hover={{ bg: '#cc6a4f' }} w={"100%"} >
+                                { loading ? (
+                                    <Spinner size={"sm"} />
+                                ) : (
+                                    <Text>Log In</Text>
+                                )}
                             </Button>
-                        </Stack>
+                        </Flex>
                     </Stack>
                 </Box>
             </Stack>
