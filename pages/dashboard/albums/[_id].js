@@ -247,7 +247,7 @@ export default function DashAlbums({ album }) {
                 // You can optionally set other attributes like `title`, etc
                 // Especially, if the anchor element will be attached to the DOM
                 a.href = url;
-                a.download = "photo_gallery_download";
+                a.download = album.name.replace(" ", "_");
 
                 // Click handler that releases the object URL after the element has been clicked
                 // This is required for one-off downloads of the blob content
