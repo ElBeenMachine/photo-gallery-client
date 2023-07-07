@@ -123,7 +123,7 @@ export default function DashUsers({ users }) {
             <AdminBar>
                 <Menu>
                     <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
-                        <HamburgerIcon boxSize={25} />
+                        <HamburgerIcon boxsize={25} />
                     </MenuButton>
                     <MenuList>
                         <MenuItem onClick={onOpenNew}>Create a new user</MenuItem>

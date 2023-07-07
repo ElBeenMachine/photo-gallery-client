@@ -10,7 +10,7 @@ export default function PasswordSuccess() {
         <Flex minH={"calc(100vh - 180px)"} m={0} align={'center'} justify={'center'} bg={useColorModeValue('gray.50', 'gray.800')}>
             <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
                 <Box rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} textAlign="center" py={10} px={6}>
-                    <CheckCircleIcon boxSize={'50px'} color={'#ff8563'} />
+                    <CheckCircleIcon boxsize={'50px'} color={'#ff8563'} />
                     <Heading as="h2" size="xl" mt={6} mb={2}>
                         Password Changed
                     </Heading>
