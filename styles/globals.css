@@ -113,7 +113,7 @@ a {
     top: 0;
     left: 0;
     /*optional bg color*/
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(0, 0, 0, 0.8);
     /*the following isn't necessary but will help center everything once we add buttons*/
 }
 

@@ -1,7 +1,7 @@
 import Layout from "@/Components/Dashboard/DashLayout";
 import { hasToken } from "@/utils/checkUser";
 
-import { useColorModeValue, Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack, Skeleton, Input, FormControl, Flex, Spinner, Progress, Image } from "@chakra-ui/react";
+import { Modal, ModalContent, ModalOverlay, ModalFooter, ModalHeader, ModalBody, ModalCloseButton, Box, WrapItem, Button, Text, useDisclosure, Menu, MenuButton, MenuList, MenuItem, Heading, Stack, Skeleton, Input, FormControl, Flex, Spinner, Progress, Image, MenuDivider } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
 
 import Album from "@/models/Album";
@@ -14,8 +14,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 import AdminBar from "@/Components/Dashboard/AdminBar";
-import { CloseIcon, DownloadIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai"
+import { HamburgerIcon } from "@chakra-ui/icons";
+import { AiOutlineRight, AiOutlineLeft, AiOutlineArrowLeft } from "react-icons/ai"
 import { BsDownload } from "react-icons/bs";
 
 import handleError from "@/utils/fetchHandler";
@@ -23,7 +23,9 @@ import handleError from "@/utils/fetchHandler";
 import { toast } from "react-toastify";
 import ImageCard from "@/Components/Dashboard/Albums/ImageCard";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import JSZIP from "jszip";
 
 export default function DashAlbums({ album }) {
     const router = useRouter();
@@ -32,13 +34,57 @@ export default function DashAlbums({ album }) {
     let [uploadProgress, setUploadProgress] = useState(0);
     let [uploadCount, setUploadCount] = useState(0);
     let [fileCount, setFileCount] = useState(0);
-    const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure();
+    const { isOpen: isOpenConfirm, onOpen: onOpenDelete, onClose: onCloseConfirm } = useDisclosure();
     const { isOpen: isOpenUpload, onOpen: onOpenUpload, onClose: onCloseUpload } = useDisclosure();
     const [lightboxDisplay, setLightboxDisplay] = useState(false);
     const [lightboxImage, setLightboxImage] = useState("");
     const [downloadImage, setDownloadImage] = useState("");
     const [lightboxLoaded, setLightboxLoaded] = useState(false);
     const [imageString, setImageString] = useState(false);
+    const [selectedImages, setSelectedImages] = useState([]);
+
+    function updateSelectedCount(selected) {
+        if(selected.length == 0) return toast.dismiss("selected-count");
+
+        if(toast.isActive("selected-count")) {
+            toast.update("selected-count", {
+                render: `${selected.length} image(s) selected`
+            });
+        } else {
+            toast.info(`${selected.length} image(s) selected`, {
+                autoClose: false,
+                toastId: "selected-count",
+                position: toast.POSITION.BOTTOM_CENTER
+            });
+        }
+    }
+
+    function addSelectedImage(image) {
+        const filename = image.original.split("/")[image.original.split("/").length - 1];
+        const url = image.original;
+
+        const temp = [
+            ...selectedImages,
+            {
+                url,
+                filename
+            }
+        ];
+
+        setSelectedImages(temp);        
+
+        updateSelectedCount(temp);
+    }
+
+    function removeSelectedImage(image) {
+        const url = image.original;
+
+        const temp = selectedImages.filter(x => { return x.url != url });
+
+        setSelectedImages(temp);
+
+        updateSelectedCount(temp);
+    }
 
     function uploadImages(e) {
         let _fileCount = 0;
@@ -147,8 +193,6 @@ export default function DashAlbums({ album }) {
 
         //set lightbox visibility to true
         setLightboxDisplay(true);
-
-
     };
 
     const previousImage = () => {
@@ -168,21 +212,117 @@ export default function DashAlbums({ album }) {
         setLightboxLoaded(false);
     }
 
+    function createZip(files) {
+        const zip = new JSZIP()
+
+        toast.info(`Zipping ${files.length} image(s)`, { autoClose: false, toastId: "zip-progress", closeButton: false });
+
+        const request = async () => {
+            let counter = 1;
+            for (const { filename, url } of files) {
+                const response = await fetch(url);
+                const buffer = await response.arrayBuffer();
+                zip.file(filename, buffer);
+                if(toast.isActive("zip-progress")) {
+                    toast.update("zip-progress", {
+                        render: `Zipped ${counter} of ${files.length} image(s)`,
+                        progress: counter / files.length
+                    });
+                } else {
+                    toast.info(`Zipped ${counter} of ${files.length} image(s)`, { autoClose: false, toastId: "zip-progress", progress: counter / files.length, closeButton: false });
+                }
+                counter++;
+            }
+        }
+
+        request().then(async () => {
+            zip.generateAsync({ type: 'blob' }).then((blob) => {
+                // Create an object URL for the blob object
+                const url = URL.createObjectURL(blob);
+
+                // Create a new anchor element
+                const a = document.createElement('a');
+
+                // Set the href and download attributes for the anchor element
+                // You can optionally set other attributes like `title`, etc
+                // Especially, if the anchor element will be attached to the DOM
+                a.href = url;
+                a.download = "photo_gallery_download";
+
+                // Click handler that releases the object URL after the element has been clicked
+                // This is required for one-off downloads of the blob content
+                const clickHandler = () => {
+                    setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                    removeEventListener('click', clickHandler);
+                    }, 150);
+                };
+
+                // Add the click event listener on the anchor element
+                // Comment out this line if you don't want a one-off download of the blob content
+                a.addEventListener('click', clickHandler, false);
+
+                // Programmatically trigger a click on the anchor element
+                // Useful if you want the download to happen automatically
+                // Without attaching the anchor element to the DOM
+                // Comment out this line if you don't want an automatic download of the blob content
+                a.click();
+
+                // Return the anchor element
+                // Useful if you want a reference to the element
+                // in order to attach it to the DOM or use it in some other way
+                if(toast.isActive("zip-progress")) {
+                    toast.update("zip-progress", {
+                        render: `${files.length} file(s) downloaded`,
+                        type: toast.TYPE.SUCCESS,
+                        autoClose: true,
+                        closeButton: true
+                    });
+                } else {
+                    toast.success(`${files.length} file(s) downloaded`);
+                }
+            });
+        });
+    }
+
+    const downloadSelected = () => {
+        createZip(selectedImages);
+    }
+
+    const downloadAll = () => {
+        let files = [];
+        for(let image of album.images) {
+            const filename = image.original.split("/")[image.original.split("/").length - 1];
+            const url = image.original;
+
+            files.push({
+                url,
+                filename
+            });
+        };
+        createZip(files);
+    }
+
     return (
         <Layout pageTitle = { `Photo Gallery | ${album.name}` }>
-            { session.user.role == "admin" ? (
-                <AdminBar>
-                    <Menu>
-                        <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
-                            <HamburgerIcon boxSize={25} />
-                        </MenuButton>
-                        <MenuList>
-                            <MenuItem onClick={onOpenUpload}>Upload Images</MenuItem>
-                            <MenuItem onClick={onOpenConfirm}>Delete Album</MenuItem>
-                        </MenuList>
-                    </Menu>
-                </AdminBar>
-            ) : (null) }
+            <AdminBar>
+                <Menu>
+                    <MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
+                        <HamburgerIcon boxsize={25} />
+                    </MenuButton>
+                    <MenuList>
+                        { session.user.role == "admin" ? (
+                            <>
+                                <MenuItem onClick={onOpenUpload}>Upload Images</MenuItem>
+                                <MenuItem onClick={onOpenDelete}>Delete Album</MenuItem>
+                                <MenuDivider />
+                            </>
+                        ) : (null) }
+                        <MenuItem onClick={downloadAll}>Download Entire Album</MenuItem>
+                        <MenuItem onClick={downloadSelected}>Download Selected Images</MenuItem>
+                    </MenuList>
+                </Menu>
+            </AdminBar>
             <Stack flexGrow={1} py={10}>
                 <Stack direction={"column"} px={10} >
                     <Heading>{album.name}</Heading>
@@ -190,9 +330,9 @@ export default function DashAlbums({ album }) {
                     <Text fontSize={"sm"} opacity={0.8} ><em>Click an image to download it</em></Text>
                 </Stack>
                 { album.images.length > 0 ? (
-                    <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3, 4], columnGap: "8px" }}>
+                    <Box padding={10} w="100%" sx={{ columnCount: [1, 2, 3, 4], columnGap: "10px" }}>
                         {album.images.map((image) => (
-                            <ImageCard onclick={() => showImage(image)} image={image} />
+                            <ImageCard addFunction={addSelectedImage} removeFunction={removeSelectedImage} onclick={() => showImage(image)} image={image} />
                         ))}
                     </Box>
                 ) : (
@@ -259,36 +399,50 @@ export default function DashAlbums({ album }) {
 
             {/* Image Lightbox */}
             { lightboxDisplay ?
-                <Flex id="lightbox" w={"100%"} h={"100%"} direction={"column"} justifyContent={"space-between"} alignItems={"center"}>
-                    <LightBoxRow alignment={"end"}>
+                <Flex zIndex={2} id="lightbox" w={"100%"} h={"100%"} direction={"column"} justifyContent={"space-between"} alignItems={"center"}>
+                    <LightBoxRow alignment={"space-between"}>
                         <Button color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={hideLightBox}>
-                            <CloseIcon boxSize={3} />
+                            <AiOutlineArrowLeft boxsize={5} />
                         </Button>
+                        <Link px={4} as={Button} download href={downloadImage} cursor={"pointer"} color={"white"}>
+                            <BsDownload />
+                        </Link>
                     </LightBoxRow>
-                    <Skeleton m={5} isLoaded={lightboxLoaded} overflow={"hidden"} flexGrow={1}>
+
+                    <Skeleton m={5} mx={"60px"} isLoaded={lightboxLoaded} overflow={"hidden"} flexGrow={1}>
                         <Image h={"100%"} onLoad={() => setLightboxLoaded(true)} src={lightboxImage.thumbs["2048"].url} objectFit={"contain"} />
                     </Skeleton>
-                    <Text mb={4}>{imageString}</Text>
-                    <LightBoxRow alignment="center">
-                        <Button w={"100%"} color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={previousImage}>
-                            <AiOutlineLeft /> <Text ml={4} display={{ base: "none", md: "inline-block" }}>Previous Image</Text>
-                        </Button>
-                        <Link as={Button} download href={downloadImage} display={"flex"} justifyContent={"center"} alignItems={"center"} w={"max-content"} whiteSpace={"nowrap"} cursor={"pointer"} color={"white"} bg={"none"} _hover={{ bg: "none" }}>
-                            <BsDownload /> <Text ml={4} display={{ base: "none", md: "inline-block" }}>Download Image</Text>
-                        </Link>
-                        <Button w={"100%"} color={"white"} bg={"none"} _hover={{ bg: "none" }} onClick={nextImage}>
-                        <Text mr={4} display={{ base: "none", md: "inline-block" }}>Next Image</Text> <AiOutlineRight />
-                        </Button>
-                    </LightBoxRow>
+
+                    <Text mb={4} color={"white"}>{imageString}</Text>
+
+                    <Box pos={"absolute"} top={"50%"} mt={"-15px"} left={"10px"}>
+                        <LightBoxNavigation onClick={previousImage}>
+                            <AiOutlineLeft color="white" />
+                        </LightBoxNavigation>
+                    </Box>
+
+                    <Box pos={"absolute"} top={"50%"} mt={"-15px"} right={"10px"}>
+                        <LightBoxNavigation onClick={nextImage}>
+                            <AiOutlineRight color="white" />
+                        </LightBoxNavigation>
+                    </Box>
                 </Flex>
             : '' }
         </Layout>
     );
 }
 
+const LightBoxNavigation = ({ children, onClick }) => {
+    return (
+        <Button onClick={onClick} h={"40px"} w={"40px"} p={0} borderRadius={"100%"} bg={"rgba(0, 0, 0, 0.5)"} _hover={{ bg: "rgba(255, 255, 255, 0.15)" }}>
+            {children}
+        </Button>
+    )
+}
+
 const LightBoxRow = ({ children, alignment }) => {
     return (
-        <Stack direction={"row"} w={"100%"} justifyContent={alignment} alignItems={"center"} p={2} bg={useColorModeValue("gray.700", "gray.900")}>
+        <Stack direction={"row"} w={"100%"} justifyContent={alignment} alignItems={"center"} p={2} bg={"black"}>
             {children}
         </Stack>
     )
